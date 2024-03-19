@@ -136,7 +136,8 @@ export class MapComponent implements OnInit {
     coordinates.forEach((coord) => {
       const userMarkerOptions: CustomMarkerOptions = {
         icon: this.geolocationService.getUserMarkerIcon(),
-        isCurrentUser: true
+        isCurrentUser: true,
+        zIndexOffset: -100
       };
 
       const userMarker = marker([coord[0], coord[1]], userMarkerOptions)
