@@ -136,7 +136,7 @@ export class ShopService {
   async getAllShops() {
     try {
       const response = await axios.get(`${this.baseUrl}/shops`);
-      console.log(response.data);
+      this.logger.info(response.data);
 
       return (this.allShops = response.data.data);
     } catch (error) {
@@ -148,7 +148,7 @@ export class ShopService {
   async getShop(shopId: string) {
     try {
       const response = await axios.get(`${this.baseUrl}/shops/${shopId}`);
-      // console.log(' new created shop is : ', JSON.stringify(response.data.data));
+      this.logger.info('New shop created as: ', JSON.stringify(response.data.data));
       return response.data;
     } catch (error) {
       this.logger.error('Error getting shop:', error);

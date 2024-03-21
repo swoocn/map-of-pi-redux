@@ -44,13 +44,13 @@ export class ManageBusinessComponent implements OnInit {
     this.shopServices
       .getShop(this.shopId)
       .then((response) => {
-        // console.log('from response in manage busines : ', response);
+        this.logger.info('From response in manage busines: ', response);
         this.shop = response.data;
         this.currentuser = this.currentUserService.getCurrentUser();
         this.logger.info('Here is the real shop: ', this.shop);
       })
       .catch((err) => {
-        this.logger.error('Error while setting shop : ', err);
+        this.logger.error('Error while setting shop: ', err);
       });
   }
 }

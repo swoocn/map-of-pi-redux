@@ -117,7 +117,7 @@ export class MapComponent implements OnInit {
   }
 
   async track() {
-    console.log('Coordinates from shop in track: ', this.shopService.getUserPosition());
+    this.logger.debug('Coordinates from shop in track: ', this.shopService.getUserPosition());
 
     const location = await axios.get('https://ipapi.co/json/');
 
