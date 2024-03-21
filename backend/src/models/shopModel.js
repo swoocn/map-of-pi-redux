@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Product = require("./productModel");
 const User = require("./userModel");
+const logger = require("./logger");
 
 const shopSchema = new mongoose.Schema({
   name: String,
@@ -41,7 +42,7 @@ shopSchema.pre("remove", async function (next) {
     await Product.deleteMany({ shop: this._id });
     next();
   } catch (error) {
-    console.error("Product failed to be deleted with shop");
+    logger.error("Product failed to be deleted with shop", error);
     next(error);
   }
 });
