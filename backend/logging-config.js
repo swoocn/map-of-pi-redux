@@ -4,6 +4,8 @@ const winston = require('winston');
 dotenv.config();
 
 const configureLogging = () => {
+    console.log(`VERCEL_ENV: ${process.env.VERCEL_ENV}`);
+
     // check if the app is running in development mode or sandbox
     const isLocalhost = () => {
         return process.env.VERCEL_ENV === "localhost";
