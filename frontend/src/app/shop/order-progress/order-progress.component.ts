@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-order-progress',
@@ -8,6 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class OrderProgressComponent implements OnInit {
+
+  constructor(private logger: NGXLogger) {}
   
   ngOnInit(): void {
     this.fetchOrderDetails();
@@ -17,19 +20,19 @@ export class OrderProgressComponent implements OnInit {
 
   fetchOrderDetails() {
     // Example: Fetch the details business name or dish details from the backend and update the page
-    console.log('Fetching order details...');
+    this.logger.debug('Fetching order details...');
     // Replace with actual API call
   }
 
   initializeTimer() {
     // Example: Start a countdown timer and update the #time-remaining element every second
-    console.log('Initializing countdown timer...');
+    this.logger.debug('Initializing countdown timer...');
     // Replace with actual timer initialization code
   }
 
   fetchTotalPrice() {
     // Example: Fetch the total price from the backend and update the .cart-content__total-value element
-    console.log('Fetching total price...');
+    this.logger.debug('Fetching total price...');
     // Replace with actual API call and DOM manipulation code
   }
 }
