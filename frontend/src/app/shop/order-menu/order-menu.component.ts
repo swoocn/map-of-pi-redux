@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 import { ShopService } from '../../core/service/shop.service';
 import { CurrentUserService } from '../../core/service/current-user.service';
 import { PaymentsService } from '../../core/service/payments.service';
@@ -33,11 +34,11 @@ export class OrderMenuComponent implements OnInit {
     private shopServices: ShopService,
     private currentUserService: CurrentUserService,
     private paymentService: PaymentsService,
-  ) {
-    this.shopId = this.params.snapshot.params['id'];
-    // this.shopServices.getShop(this.shopId).then((response) => {
-    //   this.shop = response.data;
-    // });
+    private logger: NGXLogger) {
+      this.shopId = this.params.snapshot.params['id'];
+      // this.shopServices.getShop(this.shopId).then((response) => {
+      //   this.shop = response.data;
+      // });
   }
 
   businessImages: any[] = [
@@ -124,7 +125,7 @@ export class OrderMenuComponent implements OnInit {
   switchToProductsMenu() {}
 
   consoleShop(): void {
-    console.log('Here is the shop', this.shop);
+    this.logger.info('Here is the shop', this.shop);
   }
 
   ngOnInit(): void {
@@ -133,7 +134,7 @@ export class OrderMenuComponent implements OnInit {
       product.showDeleteButton = false;
     });
 
-    console.log('Here is the shop', this.shop);
+    this.logger.info('Here is the shop', this.shop);
 
     this.shopServices
       .getShop(this.shopId)
@@ -141,10 +142,10 @@ export class OrderMenuComponent implements OnInit {
         this.isShop = true;
         this.shop = response.data;
         this.currentUser = this.currentUserService.getCurrentUser();
-        console.log('Here is the real shop and associated products: ', this.shop.products);
+        this.logger.info('Here is the real shop and associated products: ', this.shop.products);
       })
       .catch((err) => {
-        console.log('Error while setting up shop : ', err);
+        this.logger.error('Error while setting up shop : ', err);
       });
   }
 
