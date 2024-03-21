@@ -3,16 +3,15 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { Map, marker, Layer } from 'leaflet';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 import axios from 'axios';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
-
 import { GeolocationService } from '../../core/service/geolocation.service';
 import { ShopService } from '../../core/service/shop.service';
 import { SnackService } from '../../core/service/snack.service';
 import { dummyCoordinates } from '../../core/model/business';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-
 import { CustomMarkerOptions } from './marker-options.interface';
 
 @Component({
@@ -49,6 +48,7 @@ export class MapComponent implements OnInit {
     private readonly snackService: SnackService,
     private shopService: ShopService,
     private translateService: TranslateService,
+    private logger: NGXLogger
   ) {
     this.options = this.geolocationService.getMapOptions();
     this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
@@ -58,11 +58,8 @@ export class MapComponent implements OnInit {
     this.userPositions = this.shopService.getUserPosition();
 
     this.translateService.onLangChange.subscribe(() => {
-      // console.log('Language changed. Updating translated strings...');
       this.removeAllMarkersFromMap();
-      // Update translated strings here
       this.updateTranslatedStrings();
-      // console.log('Translated strings updated:', this.distanceMessage, this.onlinePiOrdersAllowedMessage, this.menuItemsAvailable, this.visitShop, this.takeRoute);
       this.addAllCoordinatesToMap();
     });
   }
@@ -71,7 +68,7 @@ export class MapComponent implements OnInit {
     try {
       const response = await axios.get('https://api-mapofpi.vercel.app/shops');
 
-      // console.log('From Map of Pi : ', response.data?.data);
+      this.logger.debug('From Map of Pi: ', response.data?.data);
 
       const shops: any[] = response.data?.data;
 
@@ -82,12 +79,9 @@ export class MapComponent implements OnInit {
       this.updateTranslatedStrings();
       this.addAllCoordinatesToMap();
 
-      // console.log(
-      //   'All shops after fetching them from DB ',
-      //   this.allShops.map((shop) => shop.coordinates),
-      // );
+      this.logger.debug('All shops after fetching them from DB ', this.allShops.map((shop) => shop.coordinates));
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
     this.track();
   }
@@ -104,7 +98,7 @@ export class MapComponent implements OnInit {
 
   // Filter shops based on search query
   filterShops(query: string): void {
-    console.log("filterShops called");
+    this.logger.debug("Filtering shops..");
     this.filteredShops = this.allShops.filter(shop =>
       shop.name.toLowerCase().includes(query.toLowerCase())
     );
@@ -129,7 +123,7 @@ export class MapComponent implements OnInit {
 
     const { data } = location;
 
-    // console.log('User data: ', data);
+    this.logger.debug('User data: ', data);
 
     const coordinates = [[data.latitude, data.longitude]];
 
@@ -213,7 +207,6 @@ export class MapComponent implements OnInit {
                               // routeControl.removeFrom(this.map);
                               this.map.removeControl(routeControl);
                               newMarker.removeFrom(this.map);
-                              console.log('Button clicked');
                             });
                           }
                         });
@@ -241,8 +234,8 @@ export class MapComponent implements OnInit {
                   },
                 });
 
-                console.log('from routing : ', { ...routeControl });
-                console.log('type of routes : ', typeof routeControl);
+                this.logger.debug('From routing : ', { ...routeControl });
+                this.logger.debug('Type of routes : ', typeof routeControl);
                 routeControl.addTo(this.map);
               });
             });
@@ -252,7 +245,7 @@ export class MapComponent implements OnInit {
             }
           });
       } else {
-          //console.error(`Incomplete coordinates for shop ${shop.name}`);
+          this.logger.error(`Incomplete coordinates for shop ${shop.name}`);
       }
     });
   }
