@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosRequestConfig } from 'axios';
+import { NGXLogger } from 'ngx-logger';
 import { IShopData } from '../model/business';
 
 @Injectable({
@@ -15,7 +16,7 @@ export class ShopService {
   city: string = '';
   region: string = '';
 
-  constructor() {}
+  constructor(private logger: NGXLogger) {}
 
   getConfig(): AxiosRequestConfig {
     const token = localStorage.getItem('accessToken');
@@ -70,7 +71,7 @@ export class ShopService {
       const response = await axios.post(`${this.baseUrl}/shops/register`, { ...data }, this.getConfig());
       return response.data;
     } catch (error: any) {
-      console.log('Error while creating shop:', error);
+      this.logger.error('Error while registering shop:', error);
       throw new Error(error);
     }
   }
@@ -80,6 +81,7 @@ export class ShopService {
       const response = await axios.delete(`${this.baseUrl}/shops/${shopId}`, this.getConfig());
       return response.data;
     } catch (error) {
+      this.logger.error('Error deleting shop:', error);
       throw new Error('Error deleting shop: ');
     }
   }
@@ -89,6 +91,7 @@ export class ShopService {
       const response = await axios.patch(`${this.baseUrl}/shops/${shopId}`, updatedData, this.getConfig());
       return response.data;
     } catch (error) {
+      this.logger.error('Error updating shop:', error);
       throw new Error('Error updating shop: ');
     }
   }
@@ -105,6 +108,7 @@ export class ShopService {
       const response = await axios.post(`${this.baseUrl}/shops/add-product/${shopId}`, { ...product }, this.getConfig());
       return response.data;
     } catch (error) {
+      this.logger.error('Error adding product to shop:', error);
       throw new Error('Error adding product to shop: ');
     }
   }
@@ -114,7 +118,8 @@ export class ShopService {
       const response = await axios.delete(`${this.baseUrl}/shops/products/${productId}`, { ...this.getConfig });
       return response.data;
     } catch (error) {
-      throw new Error('Error adding product to shop: ');
+      this.logger.error('Error deleting product from shop:', error);
+      throw new Error('Error deleting product from shop: ');
     }
   }
 
@@ -123,6 +128,7 @@ export class ShopService {
       const response = await axios.get(`${this.baseUrl}/shops/products/${shopId}`, this.getConfig());
       return response.data;
     } catch (error) {
+      this.logger.error('Error getting shop products:', error);
       throw new Error('Error getting shop products: ');
     }
   }
@@ -134,6 +140,7 @@ export class ShopService {
 
       return (this.allShops = response.data.data);
     } catch (error) {
+      this.logger.error('Error getting all shops:', error);
       throw new Error('Error getting all shops: ');
     }
   }
@@ -143,7 +150,8 @@ export class ShopService {
       const response = await axios.get(`${this.baseUrl}/shops/${shopId}`);
       // console.log(' new created shop is : ', JSON.stringify(response.data.data));
       return response.data;
-    } catch (err) {
+    } catch (error) {
+      this.logger.error('Error getting shop:', error);
       throw new Error('Error getting shop: ');
     }
   }
