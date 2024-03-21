@@ -52,10 +52,10 @@ mongoose
   .then(() => {
     app.listen(process.env.PORT, () => {
       console.log(
-        `Succesfuly connected to db ${process.env.MONGODB_URL} and app running on port ${process.env.PORT}`
+        `Successful connection to DB ${process.env.MONGODB_URL} and app running on port ${process.env.PORT}`
       );
     });
   })
   .catch((err) => {
-    console.log("error while connectiong to db");
+    console.log("Error while connectiong to DB", err);
   });
