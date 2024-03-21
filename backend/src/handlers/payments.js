@@ -4,7 +4,7 @@ const platformAPIClient = require("../services/platformAPIClient");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const isAuthenticated = require("../authMiddleware/isAuthenticated");
-const logger = require("./logger");
+const logger = require("../../logger");
 
 const router = express.Router();
 

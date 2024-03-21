@@ -1,6 +1,6 @@
 const Shop = require("../models/shopModel");
 const Product = require("../models/productModel");
-const logger = require("./logger");
+const logger = require("../../logger");
 
 const search = async (req, res) => {
     try {

@@ -2,7 +2,7 @@ const Shop = require("../models/shopModel");
 const User = require("../models/userModel");
 const platformAPIClient = require("../services/platformAPIClient");
 const jwt = require("jsonwebtoken");
-const logger = require("./logger");
+const logger = require("../../logger");
 
 const signInUser = async (req, res) => {
   const authResult = req.body.authResult;

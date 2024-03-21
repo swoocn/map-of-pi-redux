@@ -1,5 +1,5 @@
 const Order = require("../models/orderModel");
-const logger = require("./logger");
+const logger = require("../../logger");
 
 const getUserTransactions = async (req, res) => {
     const currentUser = req.currentUser;

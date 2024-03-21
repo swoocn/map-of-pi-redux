@@ -3,7 +3,7 @@ const router = express.Router();
 const platformAPIClient = require("../services/platformAPIClient");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const logger = require("./logger");
+const logger = require("../../logger");
 
 
 // handle the user auth accordingly
