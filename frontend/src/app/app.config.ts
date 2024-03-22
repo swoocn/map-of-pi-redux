@@ -7,7 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { Pi } from '@pinetwork-js/sdk';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
-import { loggingConfigProvider } from '../logging-config';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -34,6 +34,11 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => () => Pi.init({ version: '2.0', sandbox: environment.isSandbox }),
       multi: true,
     },
-    loggingConfigProvider
+    importProvidersFrom(
+      LoggerModule.forRoot({
+        level: !environment.isSandbox ? NgxLoggerLevel.INFO : NgxLoggerLevel.DEBUG,
+        serverLogLevel: NgxLoggerLevel.OFF,
+      }),
+    ),
   ]
 };
