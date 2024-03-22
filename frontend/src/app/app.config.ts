@@ -1,4 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -38,7 +39,9 @@ export const appConfig: ApplicationConfig = {
       LoggerModule.forRoot({
         level: !environment.isSandbox ? NgxLoggerLevel.INFO : NgxLoggerLevel.DEBUG,
         serverLogLevel: NgxLoggerLevel.OFF,
+        timestampFormat: 'YYYY-MM-dd hh:mm:ss.SSS'
       }),
     ),
+    DatePipe
   ]
 };
