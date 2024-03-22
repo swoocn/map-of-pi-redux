@@ -1,10 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { TranslateModule } from '@ngx-translate/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
+import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  let mockLogger: jasmine.SpyObj<NGXLogger>;
+
   beforeEach(async () => {
+    const loggerSpy = jasmine.createSpyObj('NGXLogger', ['debug', 'info', 'warn', 'error']);
 
     const activatedRouteStub = {
       snapshot: {
@@ -14,8 +18,13 @@ describe('AppComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [AppComponent, TranslateModule.forRoot()],
-      providers: [{ provide: ActivatedRoute, useValue: activatedRouteStub }]
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRouteStub },
+        { provide: NGXLogger, useValue: loggerSpy }
+      ]
     }).compileComponents();
+
+    mockLogger = TestBed.inject(NGXLogger) as jasmine.SpyObj<NGXLogger>;
   });
 
   it('should create the app', () => {
