@@ -1,15 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Pi } from '@pinetwork-js/sdk';
-import { AuthResult } from '@pinetwork-js/sdk/build/types';
-import axios from 'axios';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { UiStateService } from './core/service/ui-state.service';
-import { ShopService } from './core/service/shop.service';
-import { SnackService } from './core/service/snack.service';
-import { CurrentUserService } from './core/service/current-user.service';
 import { PaymentsService } from './core/service/payments.service';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-root',
@@ -21,13 +16,12 @@ import { PaymentsService } from './core/service/payments.service';
 })
 export class AppComponent implements OnInit {
   constructor(
-    private readonly snackService: SnackService,
+    private readonly logger: NGXLogger,
     private readonly uiStateService: UiStateService,
-    private readonly currentUserService: CurrentUserService,
-    private readonly shopServices: ShopService,
     private readonly paymentServices: PaymentsService,
   ) {
     this.uiStateService.setShowBackButton(false);
+    this.logger.log('### AppComponent created ###');
   }
 
   ngOnInit() {

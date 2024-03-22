@@ -7,8 +7,7 @@ import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Pi } from '@pinetwork-js/sdk';
 import { environment } from '../environments/environment';
-import { loggingConfigProvider } from '../logging-config';
-
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -34,6 +33,12 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => () => Pi.init({ version: '2.0', sandbox: environment.isSandbox }),
       multi: true,
     },
-    loggingConfigProvider
+    importProvidersFrom(
+      LoggerModule.forRoot({
+        serverLoggingUrl: '/api/logs',
+        level: !environment.isSandbox ? NgxLoggerLevel.INFO : NgxLoggerLevel.DEBUG,
+        serverLogLevel: NgxLoggerLevel.OFF,
+      }),
+    ),
   ],
 };
