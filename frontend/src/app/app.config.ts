@@ -37,7 +37,7 @@ export const appConfig: ApplicationConfig = {
     },
     importProvidersFrom(
       LoggerModule.forRoot({
-        level: !environment.isSandbox ? NgxLoggerLevel.INFO : NgxLoggerLevel.DEBUG,
+        level: !environment.isSandbox ? NgxLoggerLevel.ERROR : NgxLoggerLevel.DEBUG,
         serverLogLevel: NgxLoggerLevel.OFF,
         timestampFormat: 'YYYY-MM-dd hh:mm:ss.SSS'
       }),
