@@ -1,7 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Icon, icon, LatLng, LatLngBounds, MapOptions, tileLayer } from 'leaflet';
+import { NGXLogger } from 'ngx-logger';
 import axios from 'axios';
+
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +17,8 @@ export class GeolocationService {
   private readonly tileLayer = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   readonly geoLoading = signal<boolean>(false);
   readonly geolocationTriggerEvent$ = this.geolocationTrigger.asObservable();
+
+  constructor(private logger: NGXLogger) {}
 
   triggerGeolocation(): void {
     this.geolocationTrigger.next();
@@ -40,7 +44,7 @@ export class GeolocationService {
           },
         );
       } else {
-        observer.error('Geolocation is not available in this browser.');
+        this.logger.error('Geolocation is not available in this browser.');
         this.geoLoading.set(false);
       }
     });
