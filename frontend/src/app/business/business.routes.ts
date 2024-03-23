@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { BusinessComponent } from './business.component';
 import { AddProductComponent } from './manage-business/add-product/add-product.component';
+import { ConfirmationComponent } from './business-settings/loyalty-program/confirmation/confirmation.component';
 
 export const BUSINESS_ROUTES: Routes = [
   {
@@ -26,6 +27,10 @@ export const BUSINESS_ROUTES: Routes = [
   {
     path: 'loyalty-program',
     loadComponent: () => import('./business-settings/loyalty-program/loyalty-program.component').then((m) => m.LoyaltyProgramComponent),
+  },
+  {
+    path: 'loyalty-confirmation',
+    component: ConfirmationComponent, // Use 'component' if you're directly importing it, not 'loadComponent'
   },
   {
     path: 'products',
