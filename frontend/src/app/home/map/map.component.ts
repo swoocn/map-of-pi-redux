@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { Map, marker, Layer } from 'leaflet';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
+
 import axios from 'axios';
+import { Subscription } from 'rxjs';
+import { Map, marker, Layer } from 'leaflet';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
 
@@ -12,7 +14,6 @@ import { ShopService } from '../../core/service/shop.service';
 import { SnackService } from '../../core/service/snack.service';
 import { dummyCoordinates } from '../../core/model/business';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-
 import { CustomMarkerOptions } from './marker-options.interface';
 
 @Component({
@@ -23,7 +24,7 @@ import { CustomMarkerOptions } from './marker-options.interface';
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   layer?: Layer;
   map!: Map;
   options;
@@ -44,6 +45,8 @@ export class MapComponent implements OnInit {
 
   coordinates = dummyCoordinates;
 
+  private langChangeSubscription: Subscription;
+
   constructor(
     private readonly geolocationService: GeolocationService,
     private readonly snackService: SnackService,
@@ -57,7 +60,7 @@ export class MapComponent implements OnInit {
 
     this.userPositions = this.shopService.getUserPosition();
 
-    this.translateService.onLangChange.subscribe(() => {
+    this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => {
       // console.log('Language changed. Updating translated strings...');
       this.removeAllMarkersFromMap();
       // Update translated strings here
@@ -90,6 +93,13 @@ export class MapComponent implements OnInit {
       console.log(error);
     }
     this.track();
+  }
+
+  ngOnDestroy(): void {
+     // Unsubscribe from langChangeSubscription to prevent potential memory leaks
+     if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
   }
 
   onMapReady(map: Map): void {
