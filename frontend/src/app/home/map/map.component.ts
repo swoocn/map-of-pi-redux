@@ -194,14 +194,13 @@ export class MapComponent implements OnInit {
 
                     switch (customType) {
                       case 'user':
-                        this.snackService.showMessage(`Dear Soleil00 You"re located here`);
+                        this.snackService.showMessage(`You are located here`);
                         break;
                       case 'shop':
                         newMarker.bindPopup(`
                               <div class="p-4">
-                                  <div class="text-lg font-bold mb-2">${shop.name}</div>
-                                  <div>${shop.name} is located here and you are about to take routes towards it. It will approximately take you 23 min by car.</div>
-                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md">Cancel</button>
+                                  <div><span class="font-bold text-red-800">${shop.name}</span> has been selected as your destination and the route has been provided. It will take you approximately <span class="font-bold">XX hours and XX minutes</span> by mobile transportation.</div>
+                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">Cancel</button>
                               </div>
                           `);
 
