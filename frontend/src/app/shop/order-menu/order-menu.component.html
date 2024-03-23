@@ -52,8 +52,16 @@
         </div>
       </section>
 
+      <section class="order-menu__image-section flex justify-center">
+        <img
+            *ngFor="let image of businessImages"
+            [src]="image.url"
+            [alt]="image.alt"
+            />
+      </section>
+
       <!-- Image Gallery Section -->
-      <section class="order-menu__image-section">
+      <!-- <section class="order-menu__image-section">
         <div class="order-menu__business-images">
           <img
             *ngFor="let image of businessImages"
@@ -61,7 +69,7 @@
             [alt]="image.alt"
             class="order-menu__business-image" />
         </div>
-      </section>
+      </section> -->
 
       <!-- Menu switch section-->
       <section class="order-menu__switch-section">

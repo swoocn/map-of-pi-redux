@@ -30,6 +30,8 @@ export class OrderMenuComponent implements OnInit {
   stampsButtonText: string = 'XX Stamps';
   highlightText: string = 'You can order online and pay in person';
 
+  businessImages: any[] = [{}];
+
   constructor(
     private shopServices: ShopService,
     private currentUserService: CurrentUserService,
@@ -40,25 +42,6 @@ export class OrderMenuComponent implements OnInit {
     //   this.shop = response.data;
     // });
   }
-
-  businessImages: any[] = [
-    {
-      url: '../../../assets/images/shopping/mock/coffee-shop-image.jpg',
-      alt: 'Interior of coffee shop with a barista at work',
-    },
-    {
-      url: '../../../assets/images/shopping/mock/coffee-shop-image_2.jpg',
-      alt: 'Close-up of a coffee cup on a table',
-    },
-    {
-      url: '../../../assets/images/shopping/mock/coffee-shop-image_3.jpg',
-      alt: 'External view of coffee shop',
-    },
-    {
-      url: '../../../assets/images/shopping/mock/coffee-1.jpg',
-      alt: 'Close-up of a coffee cup on a table',
-    },
-  ];
 
   products: any[] = [
     // Placeholder product data
@@ -88,7 +71,7 @@ export class OrderMenuComponent implements OnInit {
       product.showDeleteButton = false;
     });
 
-    console.log('Here is the shop', this.shop);
+    console.log('Fetching shop data: ', this.shop);
 
     this.shopServices.getShop(this.shopId)
       .then((response) => {
@@ -96,6 +79,8 @@ export class OrderMenuComponent implements OnInit {
         this.shop = response.data;
         this.currentUser = this.currentUserService.getCurrentUser();
         console.log('Here is the real shop and associated products: ', this.shop.products);
+
+        this.businessImages = [{ url: this.shop.image, alt: 'Shop Image'}];
       })
       .catch((err) => {
         console.log('Error while setting up shop : ', err);
