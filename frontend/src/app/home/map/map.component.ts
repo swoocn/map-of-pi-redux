@@ -38,7 +38,7 @@ export class MapComponent implements OnInit {
   // Translation strings
   distanceMessage!: string;
   onlinePiOrdersAllowedMessage!: string;
-  menuItemsAvailable!: string;
+  productsAvailable!: string;
   visitShop!: string;
   takeRoute!: string;
 
@@ -117,7 +117,7 @@ export class MapComponent implements OnInit {
   private updateTranslatedStrings(): void {
     this.distanceMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.DISTANCE_MESSAGE');
     this.onlinePiOrdersAllowedMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.ONLINE_PI_ORDERS_ALLOWED_MESSAGE');
-    this.menuItemsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.MENU_ITEMS_AVAILABLE_MESSAGE');
+    this.productsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.PRODUCTS_AVAILABLE_MESSAGE');
     this.visitShop = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.VISIT_SHOP');
     this.takeRoute = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.TAKE_ROUTE');
   }
@@ -286,7 +286,7 @@ export class MapComponent implements OnInit {
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
               <div class="ml-1">
-                <code class="text-sm font-bold text-gray-900">23 km</code> ${this.distanceMessage}
+                <code class="text-sm font-bold text-gray-900">XXX km</code> ${this.distanceMessage}
               </div>
             </div>
             <div class="flex items-center">
@@ -303,7 +303,7 @@ export class MapComponent implements OnInit {
                 <circle cx="12" cy="12" r="11" />
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
-              <div class="ml-1"><code class="text-sm font-bold text-gray-900">15</code> ${this.menuItemsAvailable}</div>
+              <div class="ml-1"><code class="text-sm font-bold text-gray-900">${shop.products.length}</code> ${this.productsAvailable}</div>
             </div>
           </div>
         
