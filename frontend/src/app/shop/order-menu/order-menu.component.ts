@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ShopService } from '../../core/service/shop.service';
@@ -10,7 +11,7 @@ import { PaymentsService } from '../../core/service/payments.service';
 @Component({
   selector: 'app-order-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
+  imports: [CommonModule, FormsModule, MatIconModule, RouterModule, TranslateModule],
   templateUrl: './order-menu.component.html',
   styleUrl: './order-menu.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,10 +24,10 @@ export class OrderMenuComponent implements OnInit {
   isShop: boolean = true;
 
   cartItemCount: number = 0;
-  businessName: string = 'Business Name';
-  businessType: string = 'Coffee Shop';
-  businessAddress: string = '123 Main Street, Anytown, AN 12345, Country';
-  stampsButtonText: string = '4 Stamps';
+  // businessName: string = 'Business Name';
+  businessType: string = 'General';
+  // businessAddress: string = '123 Main Street, Anytown, AN 12345, Country';
+  stampsButtonText: string = 'XX Stamps';
   highlightText: string = 'You can order online and pay in person';
 
   constructor(
@@ -81,6 +82,26 @@ export class OrderMenuComponent implements OnInit {
     },
   ];
 
+  ngOnInit(): void {
+    this.products.forEach((product) => {
+      product.showAddButton = true;
+      product.showDeleteButton = false;
+    });
+
+    console.log('Here is the shop', this.shop);
+
+    this.shopServices.getShop(this.shopId)
+      .then((response) => {
+        this.isShop = true;
+        this.shop = response.data;
+        this.currentUser = this.currentUserService.getCurrentUser();
+        console.log('Here is the real shop and associated products: ', this.shop.products);
+      })
+      .catch((err) => {
+        console.log('Error while setting up shop : ', err);
+      });
+  }
+
   decreaseQuantity(product: any): void {
     // Handle decreasing quantity for a product
     product.quantity = Math.max(0, product.quantity - 1); // Ensure quantity does not go below 0
@@ -125,27 +146,6 @@ export class OrderMenuComponent implements OnInit {
 
   consoleShop(): void {
     console.log('Here is the shop', this.shop);
-  }
-
-  ngOnInit(): void {
-    this.products.forEach((product) => {
-      product.showAddButton = true;
-      product.showDeleteButton = false;
-    });
-
-    console.log('Here is the shop', this.shop);
-
-    this.shopServices
-      .getShop(this.shopId)
-      .then((response) => {
-        this.isShop = true;
-        this.shop = response.data;
-        this.currentUser = this.currentUserService.getCurrentUser();
-        console.log('Here is the real shop and associated products: ', this.shop.products);
-      })
-      .catch((err) => {
-        console.log('Error while setting up shop : ', err);
-      });
   }
 
   orderProduct(amount: number) {

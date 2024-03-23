@@ -15,7 +15,7 @@
       <!-- Business Information Section -->
       <section class="order-menu__section mb-2">
         <div class="flex justify-between items-center mb-1">
-          <div class="">{{ shop.name }}</div>
+          <div class="font-bold text-base text-green-900">{{ shop.name }}</div>
           <div class="flex items-center">
             <span>{{ shop.rating }}</span>
             <ng-container *ngFor="let star of getStars(shop.rating)">
@@ -33,17 +33,19 @@
         </div>
 
         <div class="order-menu__type">
-          <img
+          <!-- <img
             src="../../../assets/images/shopping/coffee-cup-icon.svg"
             alt="Coffee shop icon"
-            class="order-menu__product-image" />
+            class="order-menu__product-image" /> -->
+          <mat-icon>storefront</mat-icon>
           <p class="order-menu__product-text">{{ businessType }}</p>
         </div>
         <div class="order-menu__location">
-          <img
+          <!-- <img
             src="../../../assets/images/shopping/location-marker.svg"
             alt="Location marker"
-            class="order-menu__location-marker" />
+            class="order-menu__location-marker" /> -->
+          <mat-icon>location_on</mat-icon>  
           <address class="order-menu__location-address">
             {{ shop.address }}
           </address>
