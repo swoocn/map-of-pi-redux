@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Router, RouterLink } from '@angular/router';
-
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 
@@ -26,7 +25,7 @@ export class BusinessSettingsComponent {
 
   registerShopForm = new FormGroup({
     shopName: new FormControl('', Validators.required),
-    shopType: new FormControl('', Validators.required),
+    shopType: new FormControl('General', Validators.required),
     shopAddress: new FormControl('', Validators.required),
     shopPhone: new FormControl('0000000000'),
     // shopPhone: new FormControl('', [Validators.required, Validators.minLength(10)]),
@@ -38,11 +37,10 @@ export class BusinessSettingsComponent {
   constructor(
     private snackService: SnackService,
     private shopServices: ShopService,
-    private translateService: TranslateService
-  ) {
-    // initialize business types.
-    this.translateBusinessTypes();
-    this.translateService.onLangChange.subscribe(() => {
+    private translateService: TranslateService) {
+      // initialize business types.
+      this.translateBusinessTypes();
+      this.translateService.onLangChange.subscribe(() => {
       this.translateBusinessTypes();
     });
   }
