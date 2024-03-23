@@ -30,8 +30,6 @@ export class OrderMenuComponent implements OnInit {
   stampsButtonText: string = 'XX Stamps';
   highlightText: string = 'You can order online and pay in person';
 
-  businessImages: any[] = [{}];
-
   constructor(
     private shopServices: ShopService,
     private currentUserService: CurrentUserService,
@@ -79,8 +77,6 @@ export class OrderMenuComponent implements OnInit {
         this.shop = response.data;
         this.currentUser = this.currentUserService.getCurrentUser();
         console.log('Here is the real shop and associated products: ', this.shop.products);
-
-        this.businessImages = [{ url: this.shop.image, alt: 'Shop Image'}];
       })
       .catch((err) => {
         console.log('Error while setting up shop : ', err);

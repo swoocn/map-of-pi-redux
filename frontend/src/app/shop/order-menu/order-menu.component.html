@@ -53,11 +53,7 @@
       </section>
 
       <section class="order-menu__image-section flex justify-center">
-        <img
-            *ngFor="let image of businessImages"
-            [src]="image.url"
-            [alt]="image.alt"
-            />
+        <img [src]= "shop.image" alt="Shop Image" />
       </section>
 
       <!-- Image Gallery Section -->
@@ -116,11 +112,18 @@
               </div>
             </div>
 
-            <div class="flex gap-1 items-center">
+            <!-- <div class="flex gap-1 items-center">
               <img
                 [src]="product.image"
                 [alt]="product.name"
                 class="w-[65px] h-[65px]" />
+              <div>
+                {{ product.description }}
+              </div>
+            </div> -->
+
+            <div class="flex gap-1 items-center">
+              <mat-icon class="w-[65px] h-[65px]">inventory_2</mat-icon>
               <div>
                 {{ product.description }}
               </div>
