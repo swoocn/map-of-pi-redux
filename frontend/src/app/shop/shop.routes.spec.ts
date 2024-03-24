@@ -1,15 +1,22 @@
 import { Routes } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { NGXLogger } from 'ngx-logger';
 import { ShopComponent } from './shop.component';
 import { SHOP_ROUTES } from './shop.routes';
 
 describe('Shop Routes', () => {
+  let mockLogger: jasmine.SpyObj<NGXLogger>;
+
   beforeEach(() => {
+    const loggerSpy = jasmine.createSpyObj('NGXLogger', ['debug', 'info', 'warn', 'error']);
+
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
+      providers: [{ provide: NGXLogger, useValue: loggerSpy }]
     });
+
+    mockLogger = TestBed.inject(NGXLogger) as jasmine.SpyObj<NGXLogger>;
   });
 
   it('should have the default route pointing to ShopComponent', () => {
