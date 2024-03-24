@@ -2,14 +2,16 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { map, Observable, startWith } from 'rxjs';
-import { UiStateService } from '../../core/service/ui-state.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
 import { MatButton, MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { map, Observable, startWith } from 'rxjs';
+import { UiStateService } from '../../core/service/ui-state.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
+
 
 @Component({
   selector: 'app-search-bar',
@@ -37,7 +39,7 @@ export class SearchBarComponent implements OnInit {
 
   @Output() searchQuery = new EventEmitter<string>();
 
-  constructor(private readonly uiStateService: UiStateService) {
+  constructor(private readonly uiStateService: UiStateService, private logger: NGXLogger) {
     this.uiStateService.setShowBackButton(false);
   }
 
@@ -57,7 +59,7 @@ export class SearchBarComponent implements OnInit {
 
   emitSearchQuery(event: any): void {
     const query = event.target.value;
-    console.log('Search query:', query);
+    this.logger.info('Search query emitted:', query);
     this.searchQuery.emit(query);
   }
 }

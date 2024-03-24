@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-add-product',
@@ -20,6 +21,8 @@ export class AddProductComponent {
     selectedShippingOption: new FormControl(''),
   });
 
+  constructor(private logger: NGXLogger) {}
+
   selectedImages: any[] = [];
 
   onFileChange(event: any) {
@@ -36,6 +39,6 @@ export class AddProductComponent {
   submitForm() {
     // const imageUrl = this.selectedImages[0].url;
     // const cleanedUrl = imageUrl.replace('data:', '');
-    console.log(this.selectedImages);
+    this.logger.debug(this.selectedImages);
   }
 }

@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { NGXLogger } from 'ngx-logger';
 
 import { SnackService } from '../../core/service/snack.service';
 import { ShopService } from '../../core/service/shop.service';
@@ -33,7 +35,7 @@ export class BusinessSettingsComponent {
     shopDescription: new FormControl('', Validators.required),
   });
 
-  constructor(private snackService: SnackService, private shopServices: ShopService) {}
+  constructor(private snackService: SnackService, private shopServices: ShopService, private logger: NGXLogger) {}
 
   onFileChange(event: any) {
     if (event.target.files) {
@@ -78,12 +80,12 @@ export class BusinessSettingsComponent {
           this.snackService.showMessage(`Redirecting to ${response.data.name} shop`);
         } else {
           this.snackService.showError(`Email address is already registered to a business. Please try a different email address.🙏`);
-          console.log(response);
+          this.logger.error(response);
         }
       });
     } else {
       this.registerShopForm.markAllAsTouched();
-      console.log('Invalid data');
+      this.logger.warn('Invalid data');
     }
   }
 

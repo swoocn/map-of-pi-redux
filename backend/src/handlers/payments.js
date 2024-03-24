@@ -4,8 +4,7 @@ const platformAPIClient = require("../services/platformAPIClient");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const isAuthenticated = require("../authMiddleware/isAuthenticated");
-const util = require("util");
-const fs = require("fs");
+const logger = require("../../logger");
 
 const router = express.Router();
 
@@ -22,6 +21,7 @@ router.post("/incomplete",isAuthenticated, async (req, res) => {
 
     // order doesn't exist
     if (!order) {
+      logger.error("Order not found for incomplete payment");
       return res.status(400).json({ message: "Order not found" });
     }
 
@@ -31,7 +31,8 @@ router.post("/incomplete",isAuthenticated, async (req, res) => {
 
     // and check other data as well e.g. amount
     if (paymentIdOnBlock !== order.pi_payment_id) {
-      return res.status(400).json({ message: "Payment id doesn't match." });
+      logger.error("Payment ID doesn't match for incomplete payment");
+      return res.status(400).json({ message: "Payment ID doesn't match." });
     }
 
     // mark the order as paid
@@ -52,11 +53,10 @@ router.post("/incomplete",isAuthenticated, async (req, res) => {
 
     // let Pi Servers know that the payment is completed
     await platformAPIClient.post(`/v2/payments/${paymentId}/complete`, { txid });
-    return res
-      .status(200)
-      .json({ message: `Handled the incomplete payment ${paymentId}` });
+    logger.info(`Handled the incomplete payment ${paymentId}`);
+    return res.status(200).json({ message: `Handled the incomplete payment ${paymentId}` });
   } catch (error) {
-    console.error("Error in /incomplete route:", error);
+    logger.error("Error in /incomplete route:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -64,31 +64,21 @@ router.post("/incomplete",isAuthenticated, async (req, res) => {
 // approve the current payment
 router.post("/approve", isAuthenticated, async (req, res) => {
   try {
-    console.log("user hitted approve route");
-
-    // console.log("-----------current user from approve--------");
-    // console.log(req.currentUser);
-    // console.log("jwt id for userId: " + req.currentUser.uid);
-    // console.log("-----------current user from approve--------");
+    logger.info("Approve route triggered for the user");
+    logger.info(`Current user: ${req.currentUser}; JWT ID: ${req.currentUser.uid}`);
 
     if (!req.currentUser) {
-      return res
-        .status(401)
-        .json({
-          error: "unauthorized",
-          message: "User needs to sign in first",
-        });
+      logger.warn("Sign in required for current user");
+      return res.status(401).json({
+        error: "Unauthorized",
+        message: "User needs to sign in first",
+      });
     }
 
     const paymentId = req.body.paymentId;
-    const currentPayment = await platformAPIClient.get(
-      `/v2/payments/${paymentId}`
-    );
+    const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
 
- 
-   
-      //creating new order to store payment deatils
-
+    // creating new order to store payment deatils
     await Order.create({
       pi_payment_id: paymentId,
       product_id: currentPayment.data.metadata.productId,
@@ -102,12 +92,10 @@ router.post("/approve", isAuthenticated, async (req, res) => {
 
     // notifying pi server to approve payment
     await platformAPIClient.post(`/v2/payments/${paymentId}/approve`);
-
-    return res
-      .status(200)
-      .json({ message: `Approved the payment ${paymentId}` });
+    logger.info(`Approved the payment ${paymentId}`);
+    return res.status(200).json({ message: `Approved the payment ${paymentId}` });
   } catch (error) {
-    console.error("Error in /approve route:", error);
+    logger.error("Error in /approve route:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -116,22 +104,15 @@ router.post("/approve", isAuthenticated, async (req, res) => {
 router.post("/complete", isAuthenticated, async (req, res) => {
   try {
     if (!req.currentUser) {
-      return res
-        .status(401)
-        .json({
-          error: "unauthorized",
-          message: "User needs to sign in first",
-        });
+      logger.warn("Sign in required for current user");
+      return res.status(401).json({ error: "Unauthorized", message: "User needs to sign in first" });
     }
 
     const paymentId = req.body.paymentId;
     const txid = req.body.txid;
-    const currentPayment = await platformAPIClient.get(
-      `/v2/payments/${paymentId}`
-    );
+    const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
 
-    //finalyzing current payment and marking it complete (paid) in db
-
+    // finalizing current payment and marking it complete (paid) in DB
     await Order.updateOne(
       { pi_payment_id: paymentId },
       { $set: { txid: txid, paid: true } }
@@ -142,16 +123,10 @@ router.post("/complete", isAuthenticated, async (req, res) => {
     // console.log("***********form complete***************");
 
     const currentUser = req.currentUser;
-
     const amountToAdd = parseInt(currentPayment.data.amount, 10) || 0;
 
-    console.log(
-      "***********amount user is deposting to app***************"
-    );
-    console.log(
-      "this is actual amount withou edit : ",
-      currentPayment.data.amount
-    );
+    logger.info("Completed the payment:", paymentId);
+    logger.info("User deposit amount:", currentPayment.data.amount);
     // console.log("this is type of amount : ", typeof currentPayment.data.amount);
     // console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     // console.log("this is actual amount from gpt : ", amountToAdd);
@@ -167,11 +142,9 @@ router.post("/complete", isAuthenticated, async (req, res) => {
       { $inc: { balance: currentPayment.data.amount } }
     );
 
-    return res
-      .status(200)
-      .json({ message: `Completed the payment ${paymentId}` });
+    return res.status(200).json({ message: `Completed the payment ${paymentId}` });
   } catch (error) {
-    console.error("Error in /complete route:", error);
+    logger.error("Error in /complete route:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -187,11 +160,10 @@ router.post("/cancelled_payment", async (req, res) => {
       { $set: { cancelled: true } }
     );
 
-    return res
-      .status(200)
-      .json({ message: `Cancelled the payment ${paymentId}` });
+    logger.info("Cancelled the payment:", paymentId);
+    return res.status(200).json({ message: `Cancelled the payment ${paymentId}` });
   } catch (error) {
-    console.error("Error in /cancelled_payment route:", error);
+    logger.error("Error in /cancelled_payment route:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });

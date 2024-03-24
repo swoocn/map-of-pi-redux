@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -12,6 +13,8 @@ import { RouterLink } from '@angular/router';
 
 export class ShoppingCartComponent implements OnInit {
   
+  constructor(private logger: NGXLogger) {}
+
   ngOnInit(): void {
     this.setupOrderButton();
   }
@@ -47,7 +50,7 @@ export class ShoppingCartComponent implements OnInit {
       // API endpoint to submit the order
       this.submitOrder(orderDetails);
     } else {
-      console.error('One or more required elements not found in the DOM.');
+      this.logger.error('One or more required elements not found in the DOM.');
     }
   }
 
@@ -56,7 +59,7 @@ export class ShoppingCartComponent implements OnInit {
    * @param {Object} orderDetails - The details of the order to submit.
    */
   submitOrder(orderDetails: { businessName: string | null; dishName: string | null; totalPrice: string | null; }) {
-    console.log('Order details to submit:', orderDetails);
+    this.logger.info('Order details to submit:', orderDetails);
 
     // TODO: make an HTTP request to submit the orderDetails to the backend.
   }
