@@ -70,17 +70,17 @@ export class OrderMenuComponent implements OnInit {
       product.showDeleteButton = false;
     });
 
-    console.log('Fetching shop data: ', this.shop);
+    this.logger.info('Fetching shop data: ', this.shop);
 
     this.shopServices.getShop(this.shopId)
       .then((response) => {
         this.isShop = true;
         this.shop = response.data;
         this.currentUser = this.currentUserService.getCurrentUser();
-        console.log('Here is the real shop and associated products: ', this.shop.products);
+        this.logger.info('Here is the real shop and associated products: ', this.shop.products);
       })
       .catch((err) => {
-        console.log('Error while setting up shop : ', err);
+        this.logger.error('Error while setting up shop : ', err);
       });
   }
 
@@ -128,27 +128,6 @@ export class OrderMenuComponent implements OnInit {
 
   consoleShop(): void {
     this.logger.info('Here is the shop', this.shop);
-  }
-
-  ngOnInit(): void {
-    this.products.forEach((product) => {
-      product.showAddButton = true;
-      product.showDeleteButton = false;
-    });
-
-    this.logger.info('Here is the shop', this.shop);
-
-    this.shopServices
-      .getShop(this.shopId)
-      .then((response) => {
-        this.isShop = true;
-        this.shop = response.data;
-        this.currentUser = this.currentUserService.getCurrentUser();
-        this.logger.info('Here is the real shop and associated products: ', this.shop.products);
-      })
-      .catch((err) => {
-        this.logger.error('Error while setting up shop : ', err);
-      });
   }
 
   orderProduct(amount: number) {
