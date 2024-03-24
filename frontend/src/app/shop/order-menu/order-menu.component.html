@@ -1,15 +1,4 @@
 <ng-container *ngIf="isShop; else loadingSkeleton">
-  <!-- <header class="order-menu__header">
-    <div></div>
-    <div></div>
-    <button class="order-menu__header__cart-button" aria-label="Shopping cart">
-      <img
-        src="../../../assets/images/shopping/Shopping-cart-icon.svg"
-        alt="Shopping cart" />
-      <span class="order-menu__header__cart-count">{{ cartItemCount }}</span>
-    </button>
-  </header> -->
-
   <main class="order-menu__content">
     <div class="inner-wrapper">
       <!-- Business Information Section -->
@@ -33,18 +22,10 @@
         </div>
 
         <div class="order-menu__type">
-          <!-- <img
-            src="../../../assets/images/shopping/coffee-cup-icon.svg"
-            alt="Coffee shop icon"
-            class="order-menu__product-image" /> -->
           <mat-icon>storefront</mat-icon>
           <p class="order-menu__product-text">{{ businessType }}</p>
         </div>
         <div class="order-menu__location">
-          <!-- <img
-            src="../../../assets/images/shopping/location-marker.svg"
-            alt="Location marker"
-            class="order-menu__location-marker" /> -->
           <mat-icon>location_on</mat-icon>  
           <address class="order-menu__location-address">
             {{ shop.address }}
@@ -55,17 +36,6 @@
       <section class="order-menu__image-section flex justify-center">
         <img [src]= "shop.image" alt="Shop Image" />
       </section>
-
-      <!-- Image Gallery Section -->
-      <!-- <section class="order-menu__image-section">
-        <div class="order-menu__business-images">
-          <img
-            *ngFor="let image of businessImages"
-            [src]="image.url"
-            [alt]="image.alt"
-            class="order-menu__business-image" />
-        </div>
-      </section> -->
 
       <!-- Menu switch section-->
       <section class="order-menu__switch-section">
@@ -112,72 +82,18 @@
               </div>
             </div>
 
-            <!-- <div class="flex gap-1 items-center">
-              <img
-                [src]="product.image"
-                [alt]="product.name"
-                class="w-[65px] h-[65px]" />
-              <div>
-                {{ product.description }}
-              </div>
-            </div> -->
-
             <!-- Easter Egg product display logic -->
             <div class="flex gap-1 items-center">
-              <ng-container *ngIf="product.description.toLowerCase().includes('easter egg')">
+              <ng-container *ngIf="product.description?.toLowerCase().includes('easter egg')">
                 <mat-icon class="w-[65px] h-[65px]">egg</mat-icon>
               </ng-container>
-              <ng-container *ngIf="!product.description.toLowerCase().includes('easter egg')">
+              <ng-container *ngIf="!product.description?.toLowerCase().includes('easter egg')">
                 <mat-icon class="w-[65px] h-[65px]">inventory_2</mat-icon>
               </ng-container>
               <div>
                 {{ product.description }}
               </div>
             </div>
-
-            <!-- <div class="flex items-center justify-end">
-              <button
-                class="order-menu__quantity-button order-menu__quantity-button--decrease"
-                aria-label="Decrease quantity"
-                (click)="decreaseQuantity(product)">
-                -
-              </button>
-
-              <input
-                type="text"
-                class="order-menu__quantity-input"
-                [(ngModel)]="product.quantity"
-                min="1"
-                aria-label="Quantity" />
-              <button
-                class="order-menu__quantity-button order-menu__quantity-button--increase"
-                aria-label="Increase quantity"
-                (click)="increaseQuantity(product)">
-                +
-              </button>
-
-              <button
-                class="order-menu__add-button"
-                aria-label="Add items to shopping cart"
-                (click)="addToCart(product)">
-                <span
-                  class="order-menu_add-button-text"
-                  aria-label="Add items to shopping cart"
-                  >Add</span
-                >
-              </button>
-
-              <button
-                class="order-menu__delete-button"
-                *ngIf="product.showDeleteButton"
-                aria-label="Delete quantity button"
-                (click)="removeFromCart(product)">
-                <img
-                  src="../../../assets/images/shopping/delete-button.svg"
-                  alt="Button to delete added items to the shopping cart"
-                  class="order-menu__delete-buttons" />
-              </button>
-            </div> -->
 
             <div class="flex justify-end">
               <button
@@ -190,8 +106,6 @@
         } @else {
           <div class="text-center flex justify-center items-center mt-5">
             <div>{{ 'SHOPPING.ORDER_SCREEN.NO_PRODUCTS_MESSAGE' | translate }}</div>
-
-            <!-- <div>the length is {{ shop.products.length }}</div> -->
           </div>
         }
       </section>

@@ -25,9 +25,7 @@ export class OrderMenuComponent implements OnInit {
   isShop: boolean = true;
 
   cartItemCount: number = 0;
-  // businessName: string = 'Business Name';
   businessType: string = 'General';
-  // businessAddress: string = '123 Main Street, Anytown, AN 12345, Country';
   stampsButtonText: string = 'XX Stamps';
   highlightText: string = 'You can order online and pay in person';
 
@@ -37,39 +35,9 @@ export class OrderMenuComponent implements OnInit {
     private paymentService: PaymentsService,
     private logger: NGXLogger) {
       this.shopId = this.params.snapshot.params['id'];
-      // this.shopServices.getShop(this.shopId).then((response) => {
-      //   this.shop = response.data;
-      // });
   }
 
-  products: any[] = [
-    // Placeholder product data
-    {
-      id: 'coffee1',
-      name: 'Coffee 1',
-      amount: 'XX',
-      imageUrl: '../../../assets/images/shopping/mock/coffee-1.jpg',
-      imageAlt: 'Image of a cappuccino',
-      description: 'Description Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora eius harum quisquam?.',
-      quantity: 1,
-    },
-    {
-      id: 'coffee2',
-      name: 'Coffee 2',
-      amount: 'XX',
-      imageUrl: '../../../assets/images/shopping/mock/coffee-2.webp',
-      imageAlt: 'Image of a cappuccino',
-      description: 'Description Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laborum exercitationem beatae dignissimos!',
-      quantity: 1,
-    },
-  ];
-
   ngOnInit(): void {
-    this.products.forEach((product) => {
-      product.showAddButton = true;
-      product.showDeleteButton = false;
-    });
-
     this.logger.info('Fetching shop data: ', this.shop);
 
     this.shopServices.getShop(this.shopId)
@@ -134,8 +102,6 @@ export class OrderMenuComponent implements OnInit {
     this.paymentService.orderProductFromShop('test', amount, {
       productId: 'test',
     });
-
-    // emo: string, amount: number, paymentMetadata: any
   }
 
   getStars(rating: number): { fill: boolean }[] {
