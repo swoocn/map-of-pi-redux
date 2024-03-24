@@ -23,19 +23,6 @@
             registerShopForm.get('shopDescription')?.touched
           ">{{ 'BUSINESS.REGISTRATION.VALIDATIONS.BUSINESS_DESCRIPTION' | translate }}</span>
     </div>
-    <!-- <div class="business-registration__field business-registration__field-middle">
-      <label for="business-type" class="business-registration__label">{{ 'BUSINESS.REGISTRATION.LABELS.BUSINESS_TYPE' |
-        translate }}</label>
-      <select id="business-type" name="business_type" formControlName="shopType" class="business-registration__select">
-        <option *ngFor="let businessType of businessTypes" [value]="businessType">
-          {{ businessType }}
-        </option>
-      </select>
-      <span class="text-red-500" *ngIf="
-            registerShopForm.get('shopType')?.invalid &&
-            registerShopForm.get('shopType')?.touched
-          ">{{ 'BUSINESS.REGISTRATION.VALIDATIONS.BUSINESS_TYPE' | translate }}</span>
-    </div> -->
     <div class="business-registration__field business-registration__field-middle">
       <label for="location" class="business-registration__label">{{ 'BUSINESS.REGISTRATION.LABELS.BUSINESS_LOCATION' |
         translate }}</label>
@@ -57,23 +44,11 @@
       <input type="file" id="image" name="image" (change)="onFileChange($event)" formControlName="shopImage"
         class="business-registration__input hidden"
         placeholder="{{ 'BUSINESS.REGISTRATION.PLACEHOLDERS.BUSINESS_IMAGES' | translate }}" required />
-      <!-- <img [src]="registerShopForm.value.shopImage" alt="shop image"
-          class="w-[130px] h-[150px] flex justify-center items-center" /> -->
       <span class="text-red-500" *ngIf="
             registerShopForm.get('shopImage')?.invalid &&
             registerShopForm.get('shopImage')?.touched
           ">{{ 'BUSINESS.REGISTRATION.VALIDATIONS.BUSINESS_IMAGES' | translate }}</span>
     </div>
-    <!-- <div class="business-registration__field business-registration__field-middle">
-      <label for="phone" class="business-registration__label">{{ 'BUSINESS.REGISTRATION.LABELS.BUSINESS_PHONE_NUMBER' |
-        translate }}</label>
-      <input type="text" id="phone" name="phone" formControlName="shopPhone" class="business-registration__input"
-        placeholder="{{ 'BUSINESS.REGISTRATION.PLACEHOLDERS.BUSINESS_PHONE_NUMBER' | translate }}" required />
-      <span class="text-red-500" *ngIf="
-            registerShopForm.get('shopPhone')?.invalid &&
-            registerShopForm.get('shopPhone')?.touched
-          ">{{ 'BUSINESS.REGISTRATION.VALIDATIONS.BUSINESS_PHONE_NUMBER' | translate }}</span>
-    </div> -->
     <div class="business-registration__field business-registration__field-middle">
       <label for="email" class="business-registration__label">{{ 'BUSINESS.REGISTRATION.LABELS.BUSINESS_EMAIL_ADDRESS' |
         translate }}</label>
