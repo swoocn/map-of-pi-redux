@@ -100,9 +100,10 @@ export class MapComponent implements OnInit {
   filterShops(query: string): void {
     this.logger.debug("Filtering shops..");
     this.filteredShops = this.allShops.filter(shop =>
-      shop.name.toLowerCase().includes(query.toLowerCase())
-    );
-    // console.log("Filtered shops:", this.filteredShops);
+      shop.products.some((product: { name: string; }) =>
+        product.name.toLowerCase().includes(query.toLowerCase()))
+    )
+    this.logger.debug("Filtered shops:", this.filteredShops);
     // Update the map markers to reflect the filtered shops
     this.removeAllMarkersFromMap();
     this.addAllCoordinatesToMap(this.filteredShops);
