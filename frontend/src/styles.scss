@@ -54,5 +54,12 @@ body {
     color: #ffffff;
     background-color: #7e7777;
   }
-  
+  input#item-name, input#item-price {
+    background-color: #666060;
+    color: #ffffff;
+  }
+  textarea#description {
+    background-color: #666060;
+    color: #ffffff;
+  }  
 }
