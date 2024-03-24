@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 import { ShopService } from '../../core/service/shop.service';
 import { CurrentUserService } from '../../core/service/current-user.service';
 import { PaymentsService } from '../../core/service/payments.service';
@@ -34,11 +35,11 @@ export class OrderMenuComponent implements OnInit {
     private shopServices: ShopService,
     private currentUserService: CurrentUserService,
     private paymentService: PaymentsService,
-  ) {
-    this.shopId = this.params.snapshot.params['id'];
-    // this.shopServices.getShop(this.shopId).then((response) => {
-    //   this.shop = response.data;
-    // });
+    private logger: NGXLogger) {
+      this.shopId = this.params.snapshot.params['id'];
+      // this.shopServices.getShop(this.shopId).then((response) => {
+      //   this.shop = response.data;
+      // });
   }
 
   products: any[] = [
@@ -126,7 +127,28 @@ export class OrderMenuComponent implements OnInit {
   switchToProductsMenu() {}
 
   consoleShop(): void {
-    console.log('Here is the shop', this.shop);
+    this.logger.info('Here is the shop', this.shop);
+  }
+
+  ngOnInit(): void {
+    this.products.forEach((product) => {
+      product.showAddButton = true;
+      product.showDeleteButton = false;
+    });
+
+    this.logger.info('Here is the shop', this.shop);
+
+    this.shopServices
+      .getShop(this.shopId)
+      .then((response) => {
+        this.isShop = true;
+        this.shop = response.data;
+        this.currentUser = this.currentUserService.getCurrentUser();
+        this.logger.info('Here is the real shop and associated products: ', this.shop.products);
+      })
+      .catch((err) => {
+        this.logger.error('Error while setting up shop : ', err);
+      });
   }
 
   orderProduct(amount: number) {

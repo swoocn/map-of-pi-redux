@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-transactions',
@@ -11,6 +12,9 @@ import { RouterLink } from '@angular/router';
 })
 
 export class TransactionsComponent implements OnInit {
+
+  constructor(private logger: NGXLogger) {}
+
   ngOnInit(): void {
     this.setupBackButton();
     this.setupWalletButton();
@@ -28,7 +32,7 @@ export class TransactionsComponent implements OnInit {
       backButton.addEventListener('click', () => {
         // Back navigation logic goes here.
         history.back();
-        console.log('Back button logic goes here');
+        this.logger.debug('Back button logic goes here');
       });
     }
   }
@@ -41,7 +45,7 @@ export class TransactionsComponent implements OnInit {
     if (walletButton) {
       walletButton.addEventListener('click', () => {
         // Insert logic to open the wallet here.
-        console.log('Open wallet logic goes here');
+        this.logger.debug('Open wallet logic goes here');
       });
     }
   }
@@ -54,7 +58,7 @@ export class TransactionsComponent implements OnInit {
     if (dropdownButton) {
       dropdownButton.addEventListener('click', () => {
         // Insert logic to toggle the dropdown menu here.
-        console.log('Dropdown logic goes here');
+        this.logger.debug('Dropdown logic goes here');
       });
     }
   }
@@ -68,7 +72,7 @@ export class TransactionsComponent implements OnInit {
       payButton.addEventListener('click', () => {
         // Purchase with Pi logic goes here.
         history.back();
-        console.log('Pay with Pi logic goes here');
+        this.logger.debug('Pay with Pi logic goes here');
       });
     }
   }
@@ -81,7 +85,7 @@ export class TransactionsComponent implements OnInit {
     if (cancelButton) {
       cancelButton.addEventListener('click', () => {
         // Insert logic to cancel purchase button here.
-        console.log('cancel purchase logic goes here');
+        this.logger.debug('Cancel purchase logic goes here');
       });
     }
   }

@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Pi } from '@pinetwork-js/sdk';
 import { CurrentUserService } from './current-user.service';
 import { SnackService } from './snack.service';
-import axios from 'axios';
 import { ShopService } from './shop.service';
 import { GeolocationService } from './geolocation.service';
+import { NGXLogger } from 'ngx-logger';
+import axios from 'axios';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +20,8 @@ export class PaymentsService {
     private snackService: SnackService,
     private shopServices: ShopService,
     private geolocationService: GeolocationService,
-  ) {
-    this.currentUser = this.currentUserService.getCurrentUser();
+    private logger: NGXLogger) {
+      this.currentUser = this.currentUserService.getCurrentUser();
   }
 
   signInUser = async () => {
@@ -57,9 +58,8 @@ export class PaymentsService {
 
       return { currentUser, token };
     } catch (error) {
-      console.error('Error during sign-in:', error);
-
-      throw error;
+        this.logger.error('Error during sign-in:', error);
+        throw error;
     }
   };
 
@@ -69,8 +69,7 @@ export class PaymentsService {
   };
 
   onIncompletePaymentFound = (payment: any) => {
-    console.log('onIncompletePaymentFound', payment);
-
+    this.logger.info('Incomplete payment found', payment);
     const token = localStorage.getItem('accessToken');
 
     return axios.post(
@@ -87,8 +86,7 @@ export class PaymentsService {
   };
 
   onReadyForServerApproval = (paymentId: any) => {
-    console.log('onReadyForServerApproval', paymentId);
-
+    this.logger.info('Ready for server approval', paymentId);
     const token = localStorage.getItem('accessToken');
 
     axios.post(
@@ -105,8 +103,7 @@ export class PaymentsService {
   };
 
   onReadyForServerCompletion = (paymentId: string, txid: string) => {
-    console.log('onReadyForServerCompletion', paymentId, txid);
-
+    this.logger.info('Ready for server completion', paymentId, txid);
     const token = localStorage.getItem('accessToken');
 
     axios.post(
@@ -123,16 +120,16 @@ export class PaymentsService {
   };
 
   onCancel = (paymentId: any) => {
-    console.log('onCancel', paymentId);
+    this.logger.info('Payment cancelled', paymentId);
     return axios.post(`${this.baseUrl}/payments/cancelled_payment`, {
       paymentId,
     });
   };
 
   onError = (error: any, payment: any) => {
-    console.log('onError', error);
+    this.logger.info('Payment error', error);
     if (payment) {
-      console.log(payment);
+      this.logger.info(payment);
     }
   };
 
@@ -153,11 +150,10 @@ export class PaymentsService {
 
     try {
       const payment = Pi.createPayment(paymentData, callbacks);
-      console.log('This is payment created : ', payment);
-
+      this.logger.info('Payment is created successfully: ', payment);
       return payment;
     } catch (error) {
-      console.error('Error creating payment:', error);
+      this.logger.error('Error creating payment:', error);
       throw error;
     }
   };

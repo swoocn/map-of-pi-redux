@@ -3,8 +3,10 @@ import { Component, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrateg
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 import { ShopService } from '../../../core/service/shop.service';
 import { SnackService } from '../../../core/service/snack.service';
+
 
 @Component({
   selector: 'app-business-menu',
@@ -46,16 +48,16 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
     private formBuilder: FormBuilder,
     private shopServices: ShopService,
     private snackService: SnackService,
-  ) {
-    this.businessProductsForm = this.formBuilder.group({
-      itemName: [''],
-      itemPrice: [''],
-      prepTime: [''],
-      description: [''],
-      image: [''],
-    });
+    private logger: NGXLogger) {
+      this.businessProductsForm = this.formBuilder.group({
+        itemName: [''],
+        itemPrice: [''],
+        prepTime: [''],
+        description: [''],
+        image: [''],
+      });
 
-    this.shopId = this.params.snapshot.params['id'];
+      this.shopId = this.params.snapshot.params['id'];
   }
 
   // wait until all components are fully initialized
@@ -70,7 +72,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
    */
   saveToggleStates(): void {
     // Placeholder for saving the current state of toggles to the backend
-    console.log('Saving toggle states...');
+    this.logger.debug('Saving toggle states...');
     // Make API call to the backend
   }
 
@@ -79,7 +81,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
    */
   loadToggleStates(): void {
     // Placeholder for loading saved toggle states from the backend
-    console.log('Loading toggle states...');
+    this.logger.debug('Loading toggle states...');
     // Simulate fetching data from the backend
     // TODO: Make an API call to your backend to fetch saved states
     const fetchedStates = {
@@ -118,7 +120,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
     // Initial state update
     this.updateSliderAppearance();
 
-    console.log('menuToggle.nativeElement.checked: ', this.menuToggle.nativeElement.checked);
+    this.logger.debug('menuToggle.nativeElement.checked: ', this.menuToggle.nativeElement.checked);
 
     if (this.menuToggle && this.menuToggle.nativeElement.checked) {
       this.orderToggleDiv.nativeElement.classList.remove('hidden');
@@ -198,7 +200,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
 
   showModal(): void {
     if (this.addItemModal) {
-      console.log(this.addItemModal);
+      this.logger.debug(this.addItemModal);
       const modal = this.addItemModal.nativeElement as HTMLElement;
       modal.style.display = 'block';
     }
@@ -312,12 +314,12 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
       this.snackService.showMessage('Something went wrong 😟😥');
     }
 
-    console.log('From adding product to shop', response);
+    this.logger.info('From adding product to shop', response);
   }
 
   deleteProductFromShop(id: string) {
     const response: any = this.shopServices.deleteProductFromShop(id);
-    console.log('From delete :', response.data);
+    this.logger.info('From delete :', response.data);
 
     this.loadShopProduct();
 
@@ -333,7 +335,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
 
       res.data.products.map((product: any) => this.addItemToDisplayArea(product));
 
-      console.log('Populated product from shop', res.data);
+      this.logger.info('Populated products from shop', res.data);
     });
   }
 
@@ -342,7 +344,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
       this.shop = res.data;
       this.length = res.data.products.length;
 
-      console.log('Populated product from shop', res.data.products);
+      this.logger.info('Loading products from shop', res.data.products);
       this.loadShopProduct();
     });
   }
