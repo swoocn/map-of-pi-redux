@@ -122,8 +122,14 @@
               </div>
             </div> -->
 
+            <!-- Easter Egg product display logic -->
             <div class="flex gap-1 items-center">
-              <mat-icon class="w-[65px] h-[65px]">inventory_2</mat-icon>
+              <ng-container *ngIf="product.description.toLowerCase().includes('easter egg')">
+                <mat-icon class="w-[65px] h-[65px]">egg</mat-icon>
+              </ng-container>
+              <ng-container *ngIf="!product.description.toLowerCase().includes('easter egg')">
+                <mat-icon class="w-[65px] h-[65px]">inventory_2</mat-icon>
+              </ng-container>
               <div>
                 {{ product.description }}
               </div>
