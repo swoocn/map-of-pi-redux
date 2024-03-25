@@ -97,12 +97,24 @@ export class MapComponent implements OnInit {
   }
 
   // Filter shops based on search query
-  filterShops(query: string): void {
-    this.logger.debug("Filtering shops..");
-    this.filteredShops = this.allShops.filter(shop =>
-      shop.products.some((product: { name: string; }) =>
-        product.name.toLowerCase().includes(query.toLowerCase()))
-    )
+  filterShops(query: string, searchType: string): void {
+    this.logger.debug(`Filtering shops based on searchType: ${searchType}..`);
+    // search by business
+    if (searchType === 'business') {
+      this.filteredShops = this.allShops.filter(shop =>
+        shop.name.toLowerCase().includes(query.toLowerCase())
+      );
+    // search by product
+    } else if (searchType === 'product') {
+      this.filteredShops = this.allShops.filter(shop =>
+        shop.products.some((product: { name: string; }) =>
+          product.name.toLowerCase().includes(query.toLowerCase()))
+      );
+    } else {
+      this.logger.error("Unexpected and invalid search type: ", searchType);
+      this.filteredShops = [];
+    }
+
     this.logger.debug("Filtered shops:", this.filteredShops);
     // Update the map markers to reflect the filtered shops
     this.removeAllMarkersFromMap();

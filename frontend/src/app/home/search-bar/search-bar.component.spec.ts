@@ -27,14 +27,32 @@ describe('SearchBarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit searchQuery event on emitSearchQuery', () => {
+  it('should emit searchQuery event for business search when business search type is toggled', () => {
     spyOn(component.searchQuery, 'emit');
 
     const searchQuery = 'TEST QUERY';
     const mockEvent = { target: { value: searchQuery } };
+    component.isBusinessSearchType = true;
     component.emitSearchQuery(mockEvent);
 
-    expect(component.searchQuery.emit).toHaveBeenCalledWith(searchQuery);
+    expect(component.searchQuery.emit).toHaveBeenCalledWith(jasmine.objectContaining({
+      query: searchQuery,
+      searchType: 'business'
+    }));
+  });
+
+  it('should emit searchQuery event for product search when product search type is toggled', () => {
+    spyOn(component.searchQuery, 'emit');
+
+    const searchQuery = 'TEST QUERY';
+    const mockEvent = { target: { value: searchQuery } };
+    component.isBusinessSearchType = false;
+    component.emitSearchQuery(mockEvent);
+
+    expect(component.searchQuery.emit).toHaveBeenCalledWith(jasmine.objectContaining({
+      query: searchQuery,
+      searchType: 'product'
+    }));
   });
 
   it('should toggle between business and product search types', () => {
