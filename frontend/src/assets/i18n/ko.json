@@ -4,7 +4,8 @@
   },
   "HOME": {
     "ADD_MY_BUSINESS": "내 비즈니스 추가",
-    "SEARCH_BAR_PLACEHOLDER": "비즈니스 검색..."
+    "SEARCH_BY_BUSINESS_PLACEHOLDER": "상점 검색..",
+    "SEARCH_BY_PRODUCT_PLACEHOLDER": "제품 검색.."
   },
   "FOOTER": {
     "PRIVACY_POLICY": "개인정보 처리방침",

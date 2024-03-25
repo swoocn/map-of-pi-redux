@@ -26,4 +26,27 @@ describe('SearchBarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit searchQuery event on emitSearchQuery', () => {
+    spyOn(component.searchQuery, 'emit');
+
+    const searchQuery = 'TEST QUERY';
+    const mockEvent = { target: { value: searchQuery } };
+    component.emitSearchQuery(mockEvent);
+
+    expect(component.searchQuery.emit).toHaveBeenCalledWith(searchQuery);
+  });
+
+  it('should toggle between business and product search types', () => {
+    // Initial state is business search type
+    expect(component.isBusinessSearchType).toBeTruthy();
+    
+    component.toggleSearchType();
+    expect(component.isBusinessSearchType).toBeFalsy();
+    expect(component.searchBarControl.value).toBe('');
+  
+    component.toggleSearchType();
+    expect(component.isBusinessSearchType).toBeTruthy();
+    expect(component.searchBarControl.value).toBe('');
+  });
 });

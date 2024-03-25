@@ -4,7 +4,8 @@
   },
   "HOME": {
     "ADD_MY_BUSINESS": "Agregar mi negocio",
-    "SEARCH_BAR_PLACEHOLDER": "Buscar negocio..."
+    "SEARCH_BY_BUSINESS_PLACEHOLDER": "Buscar negocios..",
+    "SEARCH_BY_PRODUCT_PLACEHOLDER": "Buscar productos.."
   },
   "FOOTER": {
     "PRIVACY_POLICY": "Política de privacidad",

@@ -37,6 +37,8 @@ export class SearchBarComponent implements OnInit {
   options: string[] = ['R', 'Re', 'Res', 'Rest', 'Resta', 'Restau', 'Restaur', 'Restaura', 'Restauran', 'Restaurant'];
   searchBarControl = new FormControl('');
 
+  isBusinessSearchType = true;
+
   @Output() searchQuery = new EventEmitter<string>();
 
   constructor(private readonly uiStateService: UiStateService, private logger: NGXLogger) {
@@ -50,12 +52,9 @@ export class SearchBarComponent implements OnInit {
     );
   }
 
-  submitSearch(): void {
-    const query = this.searchBarControl.value;
-    if (query != null) {
-      this.emitSearchQuery(query);
-    }
-  }  
+  toggleSearchType(): void {
+    this.isBusinessSearchType = !this.isBusinessSearchType;
+  }
 
   emitSearchQuery(event: any): void {
     const query = event.target.value;
