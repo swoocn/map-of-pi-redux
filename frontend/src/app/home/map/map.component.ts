@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { Map, marker, Layer } from 'leaflet';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
-import { NGXLogger } from 'ngx-logger';
+
 import axios from 'axios';
+import { Subscription } from 'rxjs';
+import { NGXLogger } from 'ngx-logger';
+import { Map, marker, Layer } from 'leaflet';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
+
 import { GeolocationService } from '../../core/service/geolocation.service';
 import { ShopService } from '../../core/service/shop.service';
 import { SnackService } from '../../core/service/snack.service';
@@ -22,7 +25,7 @@ import { CustomMarkerOptions } from './marker-options.interface';
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   layer?: Layer;
   map!: Map;
   options;
@@ -43,21 +46,24 @@ export class MapComponent implements OnInit {
 
   coordinates = dummyCoordinates;
 
+  private langChangeSubscription: Subscription;
+  private geolocationSubscription: Subscription;
+
   constructor(
     private readonly geolocationService: GeolocationService,
     private readonly snackService: SnackService,
     private shopService: ShopService,
     private translateService: TranslateService,
-    private logger: NGXLogger
-  ) {
+    private logger: NGXLogger) {
+      
     this.options = this.geolocationService.getMapOptions();
-    this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
+    this.geolocationSubscription = this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
       this.locateMe();
     });
 
     this.userPositions = this.shopService.getUserPosition();
 
-    this.translateService.onLangChange.subscribe(() => {
+    this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => {
       this.removeAllMarkersFromMap();
       this.updateTranslatedStrings();
       this.addAllCoordinatesToMap();
@@ -84,6 +90,17 @@ export class MapComponent implements OnInit {
       this.logger.error(error);
     }
     this.track();
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from langChangeSubscription to prevent potential memory leaks
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+    // Unsubscribe from geolocationTriggerEvent$ to prevent potential memory leaks
+    if (this.geolocationSubscription) {
+      this.geolocationSubscription.unsubscribe();
+    }
   }
 
   onMapReady(map: Map): void {
