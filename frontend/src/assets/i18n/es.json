@@ -18,7 +18,7 @@
   "BUSINESS_MARKER_DIALOG": {
     "DISTANCE_MESSAGE": "Lejos de ti",
     "ONLINE_PI_ORDERS_ALLOWED_MESSAGE": "Pedidos Pi en línea permitidos",
-    "MENU_ITEMS_AVAILABLE_MESSAGE": "Artículos del menú disponibles",
+    "PRODUCTS_AVAILABLE_MESSAGE": "Producto/s disponible", 
     "BUTTONS": {
         "VISIT_SHOP": "Visitar Tienda",
         "TAKE_ROUTE": "Tomar Ruta"

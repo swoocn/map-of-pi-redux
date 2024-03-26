@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, EventEmitter, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, EventEmitter, Output, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
 
 import axios from 'axios';
+import { Subscription } from 'rxjs';
 import { NGXLogger } from 'ngx-logger';
 import { Map, marker, Layer } from 'leaflet';
 import * as L from 'leaflet';
@@ -23,7 +24,7 @@ import { CustomMarkerOptions } from './marker-options.interface';
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   layer?: Layer;
   map!: Map;
   options;
@@ -38,11 +39,14 @@ export class MapComponent implements OnInit {
   // Translation strings
   distanceMessage!: string;
   onlinePiOrdersAllowedMessage!: string;
-  menuItemsAvailable!: string;
+  productsAvailable!: string;
   visitShop!: string;
   takeRoute!: string;
 
   coordinates = dummyCoordinates;
+  
+  private langChangeSubscription: Subscription;
+  private geolocationSubscription: Subscription;
 
   @Output() filteredShopCountChange: EventEmitter<number> = new EventEmitter<number>();
 
@@ -51,16 +55,16 @@ export class MapComponent implements OnInit {
     private readonly snackService: SnackService,
     private shopService: ShopService,
     private translateService: TranslateService,
-    private logger: NGXLogger
-  ) {
+    private logger: NGXLogger) {
+      
     this.options = this.geolocationService.getMapOptions();
-    this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
+    this.geolocationSubscription = this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
       this.locateMe();
     });
 
     this.userPositions = this.shopService.getUserPosition();
 
-    this.translateService.onLangChange.subscribe(() => {
+    this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => {
       this.removeAllMarkersFromMap();
       this.updateTranslatedStrings();
       this.addAllCoordinatesToMap();
@@ -87,6 +91,17 @@ export class MapComponent implements OnInit {
       this.logger.error(error);
     }
     this.track();
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from langChangeSubscription to prevent potential memory leaks
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+    // Unsubscribe from geolocationTriggerEvent$ to prevent potential memory leaks
+    if (this.geolocationSubscription) {
+      this.geolocationSubscription.unsubscribe();
+    }
   }
 
   onMapReady(map: Map): void {
@@ -135,7 +150,7 @@ export class MapComponent implements OnInit {
   private updateTranslatedStrings(): void {
     this.distanceMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.DISTANCE_MESSAGE');
     this.onlinePiOrdersAllowedMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.ONLINE_PI_ORDERS_ALLOWED_MESSAGE');
-    this.menuItemsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.MENU_ITEMS_AVAILABLE_MESSAGE');
+    this.productsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.PRODUCTS_AVAILABLE_MESSAGE');
     this.visitShop = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.VISIT_SHOP');
     this.takeRoute = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.TAKE_ROUTE');
   }
@@ -212,14 +227,13 @@ export class MapComponent implements OnInit {
 
                     switch (customType) {
                       case 'user':
-                        this.snackService.showMessage(`Dear Soleil00 You"re located here`);
+                        this.snackService.showMessage(`You are located here`);
                         break;
                       case 'shop':
                         newMarker.bindPopup(`
                               <div class="p-4">
-                                  <div class="text-lg font-bold mb-2">${shop.name}</div>
-                                  <div>${shop.name} is located here and you are about to take routes towards it. It will approximately take you 23 min by car.</div>
-                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md">Cancel</button>
+                                  <div><span class="font-bold text-red-800">${shop.name}</span> has been selected as your destination and the route has been provided. It will take you approximately <span class="font-bold">XX hours and XX minutes</span> by mobile transportation.</div>
+                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">Cancel</button>
                               </div>
                           `);
 
@@ -302,7 +316,7 @@ export class MapComponent implements OnInit {
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
               <div class="ml-1">
-                <code class="text-sm font-bold text-gray-900">23 km</code> ${this.distanceMessage}
+                <code class="text-sm font-bold text-gray-900">XXX km</code> ${this.distanceMessage}
               </div>
             </div>
             <div class="flex items-center">
@@ -319,7 +333,7 @@ export class MapComponent implements OnInit {
                 <circle cx="12" cy="12" r="11" />
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
-              <div class="ml-1"><code class="text-sm font-bold text-gray-900">15</code> ${this.menuItemsAvailable}</div>
+              <div class="ml-1"><code class="text-sm font-bold text-gray-900">${shop.products.length}</code> ${this.productsAvailable}</div>
             </div>
           </div>
         

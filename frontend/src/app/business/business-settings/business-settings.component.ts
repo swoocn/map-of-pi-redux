@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
+
 import { NGXLogger } from 'ngx-logger';
+
 import { SnackService } from '../../core/service/snack.service';
 import { ShopService } from '../../core/service/shop.service';
 
@@ -17,7 +19,6 @@ import { ShopService } from '../../core/service/shop.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BusinessSettingsComponent {
-  businessTypes: string[] =[];
   router: Router = inject(Router);
   showPopup: boolean = false;
   selectedImages: any[] = [];
@@ -25,36 +26,15 @@ export class BusinessSettingsComponent {
 
   registerShopForm = new FormGroup({
     shopName: new FormControl('', Validators.required),
-    shopType: new FormControl('', Validators.required),
+    shopType: new FormControl('General', Validators.required),
     shopAddress: new FormControl('', Validators.required),
     shopPhone: new FormControl('0000000000'),
-    // shopPhone: new FormControl('', [Validators.required, Validators.minLength(10)]),
     shopEmail: new FormControl('', [Validators.required, Validators.email]),
     shopImage: new FormArray([]),
     shopDescription: new FormControl('', Validators.required),
   });
 
-  constructor(
-    private snackService: SnackService,
-    private shopServices: ShopService,
-    private translateService: TranslateService,
-    private logger: NGXLogger) {
-      // initialize business types.
-      this.translateBusinessTypes();
-      this.translateService.onLangChange.subscribe(() => {
-        this.translateBusinessTypes();
-      });
-  }
-
-  translateBusinessTypes() {
-    this.businessTypes = [
-      'RESTAURANT',
-      'RETAIL_STORE',
-      'SERVICE',
-      'CONSTRUCTION',
-      'TRANSPORTATION'
-    ].map(key => this.translateService.instant(`BUSINESS.REGISTRATION.LABELS.BUSINESS_TYPES.${key}`));
-  }
+  constructor(private snackService: SnackService, private shopServices: ShopService, private logger: NGXLogger) {}
 
   onFileChange(event: any) {
     if (event.target.files) {
@@ -70,24 +50,6 @@ export class BusinessSettingsComponent {
       };
     }
   }
-
-  // onFileChange(event: any) {
-  //   if (event.target.files && event.target.files.length > 0) {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(event.target.files[0]);
-
-  //     reader.onload = (e: any) => {
-  //       const imageData = e.target.result;
-  //       this.selectedImages = [imageData]; // Store only the first image
-  //       const shopImageFormArray = this.registerShopForm.get('shopImage') as FormArray;
-  //       if (shopImageFormArray.length === 0) {
-  //         shopImageFormArray.push(imageData); // Add only if the array is empty
-  //       } else {
-  //         shopImageFormArray.at(0).setValue(imageData); // Update only the first element
-  //       }
-  //     };
-  //   }
-  // }
 
   send(): void {
     if (this.registerShopForm.valid) {

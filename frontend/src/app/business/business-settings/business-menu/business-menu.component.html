@@ -1,6 +1,6 @@
 <main class="mb-[100px]">
   <section class="menu-settings__section">
-    <div class="mb-3">{{ 'BUSINESS.CONFIGURATION.LABELS.SHOP_NAME' | translate }} {{ shop.name }}</div>
+    <div class="mb-3 font-bold text-base text-green-900">{{ 'BUSINESS.CONFIGURATION.LABELS.SHOP_NAME' | translate }} {{ shop.name }}</div>
     <div class="menu-settings__toggle">
       <label for="menu-toggle" class="menu-settings__label"
         >{{ 'BUSINESS.CONFIGURATION.LABELS.MENU' | translate }} <span class="toggle-status">{{ menuStatusLabel }}</span>
@@ -150,7 +150,7 @@
       </div>
 
       <!-- Preparation time input group -->
-      <div class="flex gap-0 flex-col mb-3">
+      <!-- <div class="flex gap-0 flex-col mb-3">
         <label for="prep-time" class="modal__label font-bold"
           >{{ 'BUSINESS.CONFIGURATION.ADD_PRODUCT_MENU.LABELS.FOOD_SERVICE.TIME_PREPARATION_MESSAGE' | translate }}</label
         >
@@ -159,7 +159,7 @@
           id="prep-time"
           class="appearance-none border border-gray-300 rounded-md py-2 px-4 leading-tight focus:outline-none focus:border-green-500"
           formControlName="prepTime" />
-      </div>
+      </div> -->
 
       <!-- Description input group -->
       <div class="modal__description">
