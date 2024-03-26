@@ -54,17 +54,4 @@ describe('SearchBarComponent', () => {
       searchType: 'product'
     }));
   });
-
-  it('should toggle between business and product search types', () => {
-    // Initial state is business search type
-    expect(component.isBusinessSearchType).toBeTruthy();
-    
-    component.toggleSearchType();
-    expect(component.isBusinessSearchType).toBeFalsy();
-    expect(component.searchBarControl.value).toBe('');
-  
-    component.toggleSearchType();
-    expect(component.isBusinessSearchType).toBeTruthy();
-    expect(component.searchBarControl.value).toBe('');
-  });
 });

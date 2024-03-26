@@ -1,23 +1,24 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { Map, marker, Layer } from 'leaflet';
 import { Router, RouterModule } from '@angular/router';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
-import { NGXLogger } from 'ngx-logger';
+
 import axios from 'axios';
+import { NGXLogger } from 'ngx-logger';
+import { Map, marker, Layer } from 'leaflet';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
+
 import { GeolocationService } from '../../core/service/geolocation.service';
 import { ShopService } from '../../core/service/shop.service';
 import { SnackService } from '../../core/service/snack.service';
 import { dummyCoordinates } from '../../core/model/business';
-import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { CustomMarkerOptions } from './marker-options.interface';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [SearchBarComponent, LeafletModule, RouterModule],
+  imports: [LeafletModule, RouterModule],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -94,6 +95,12 @@ export class MapComponent implements OnInit {
 
   locateMe(): void {
     this.track();
+  }
+
+  resetAndShowAllShops(): void {
+    this.filteredShops = this.allShops;
+    this.removeAllMarkersFromMap();
+    this.addAllCoordinatesToMap();
   }
 
   // Filter shops based on search query
@@ -273,8 +280,6 @@ export class MapComponent implements OnInit {
   }
 
   clicked(id: any): void {
-    // this.navigator.navigate(['manage-business', id]);
-    // this.navigator.navigate(['shop', 'order-menu']);
     this.navigator.navigate(['view-shop', id]);
   }
 

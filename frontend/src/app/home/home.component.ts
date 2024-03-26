@@ -18,4 +18,8 @@ export class HomeComponent {
   passSearchQueryToMap(event: SearchQueryEvent): void {
     this.mapComponent.filterShops(event.query, event.searchType);
   }
+
+  handleSearchTypeToggled(): void {
+    this.mapComponent.resetAndShowAllShops();
+  }
 }

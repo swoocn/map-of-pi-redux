@@ -5,7 +5,7 @@
         <mat-label>{{ (isBusinessSearchType ? 'HOME.SEARCH_BY_BUSINESS_PLACEHOLDER' : 'HOME.SEARCH_BY_PRODUCT_PLACEHOLDER') | translate}}</mat-label>
         <input type="text" matInput [formControl]="searchBarControl" />
         <div class="absolute inset-y-0 right-0 flex items-center pr-2">
-          <input type="checkbox" id="toggle" class="toggle-checkbox" (change)="toggleSearchType()">
+          <input type="checkbox" id="toggle" class="toggle-checkbox" (change)="resetMap()">
           <label for="toggle" class="toggle-label">
             <mat-icon class="search-toggle-element business-icon">storefront</mat-icon>
             <mat-icon class="search-toggle-element product-icon">inventory_2</mat-icon>
@@ -16,6 +16,5 @@
         </div>
       </mat-form-field>
     </form>
-
   </div>
 </div>
