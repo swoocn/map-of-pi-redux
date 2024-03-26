@@ -40,7 +40,7 @@ export class MapComponent implements OnInit, OnDestroy {
   // Translation strings
   distanceMessage!: string;
   onlinePiOrdersAllowedMessage!: string;
-  menuItemsAvailable!: string;
+  productsAvailable!: string;
   visitShop!: string;
   takeRoute!: string;
 
@@ -128,7 +128,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private updateTranslatedStrings(): void {
     this.distanceMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.DISTANCE_MESSAGE');
     this.onlinePiOrdersAllowedMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.ONLINE_PI_ORDERS_ALLOWED_MESSAGE');
-    this.menuItemsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.MENU_ITEMS_AVAILABLE_MESSAGE');
+    this.productsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.PRODUCTS_AVAILABLE_MESSAGE');
     this.visitShop = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.VISIT_SHOP');
     this.takeRoute = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.TAKE_ROUTE');
   }
@@ -205,14 +205,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
                     switch (customType) {
                       case 'user':
-                        this.snackService.showMessage(`Dear Soleil00 You"re located here`);
+                        this.snackService.showMessage(`You are located here`);
                         break;
                       case 'shop':
                         newMarker.bindPopup(`
                               <div class="p-4">
-                                  <div class="text-lg font-bold mb-2">${shop.name}</div>
-                                  <div>${shop.name} is located here and you are about to take routes towards it. It will approximately take you 23 min by car.</div>
-                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md">Cancel</button>
+                                  <div><span class="font-bold text-red-800">${shop.name}</span> has been selected as your destination and the route has been provided. It will take you approximately <span class="font-bold">XX hours and XX minutes</span> by mobile transportation.</div>
+                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">Cancel</button>
                               </div>
                           `);
 
@@ -297,7 +296,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
               <div class="ml-1">
-                <code class="text-sm font-bold text-gray-900">23 km</code> ${this.distanceMessage}
+                <code class="text-sm font-bold text-gray-900">XXX km</code> ${this.distanceMessage}
               </div>
             </div>
             <div class="flex items-center">
@@ -314,7 +313,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 <circle cx="12" cy="12" r="11" />
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
-              <div class="ml-1"><code class="text-sm font-bold text-gray-900">15</code> ${this.menuItemsAvailable}</div>
+              <div class="ml-1"><code class="text-sm font-bold text-gray-900">${shop.products.length}</code> ${this.productsAvailable}</div>
             </div>
           </div>
         

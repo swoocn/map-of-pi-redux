@@ -52,7 +52,7 @@ export class BusinessMenuComponent implements AfterViewInit, OnInit {
       this.businessProductsForm = this.formBuilder.group({
         itemName: [''],
         itemPrice: [''],
-        prepTime: [''],
+        prepTime: ['0'],
         description: [''],
         image: [''],
       });
