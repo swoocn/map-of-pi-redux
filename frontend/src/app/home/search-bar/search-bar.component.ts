@@ -56,8 +56,6 @@ export class SearchBarComponent implements OnInit {
 
   resetMap(): void {
     this.isBusinessSearchType = !this.isBusinessSearchType;
-    // clear the search bar value when the search type is toggled
-    this.searchBarControl.setValue('');
     this.searchTypeToggled.emit();
   }
 

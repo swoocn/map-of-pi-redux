@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, EventEmitter, Output, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
@@ -43,6 +43,8 @@ export class MapComponent implements OnInit {
   takeRoute!: string;
 
   coordinates = dummyCoordinates;
+
+  @Output() filteredShopCountChange: EventEmitter<number> = new EventEmitter<number>();
 
   constructor(
     private readonly geolocationService: GeolocationService,
@@ -126,6 +128,8 @@ export class MapComponent implements OnInit {
     // Update the map markers to reflect the filtered shops
     this.removeAllMarkersFromMap();
     this.addAllCoordinatesToMap(this.filteredShops);
+    // Emit the count of filtered shops
+    this.filteredShopCountChange.emit(this.filteredShops.length);
   }
 
   private updateTranslatedStrings(): void {
