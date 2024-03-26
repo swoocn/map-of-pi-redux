@@ -47,6 +47,7 @@ export class MapComponent implements OnInit, OnDestroy {
   coordinates = dummyCoordinates;
 
   private langChangeSubscription: Subscription;
+  private geolocationSubscription: Subscription;
 
   constructor(
     private readonly geolocationService: GeolocationService,
@@ -54,10 +55,11 @@ export class MapComponent implements OnInit, OnDestroy {
     private shopService: ShopService,
     private translateService: TranslateService,
     private logger: NGXLogger) {
-      this.options = this.geolocationService.getMapOptions();
-      this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
-        this.locateMe();
-      });
+      
+    this.options = this.geolocationService.getMapOptions();
+    this.geolocationSubscription = this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
+      this.locateMe();
+    });
 
     this.userPositions = this.shopService.getUserPosition();
 
@@ -91,9 +93,13 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-     // Unsubscribe from langChangeSubscription to prevent potential memory leaks
-     if (this.langChangeSubscription) {
+    // Unsubscribe from langChangeSubscription to prevent potential memory leaks
+    if (this.langChangeSubscription) {
       this.langChangeSubscription.unsubscribe();
+    }
+    // Unsubscribe from geolocationTriggerEvent$ to prevent potential memory leaks
+    if (this.geolocationSubscription) {
+      this.geolocationSubscription.unsubscribe();
     }
   }
 
