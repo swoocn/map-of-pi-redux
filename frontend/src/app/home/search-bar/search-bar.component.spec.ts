@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { NGXLogger } from 'ngx-logger';
-import { SearchBarComponent } from './search-bar.component';
+import { SearchBarComponent, SearchQueryEvent } from './search-bar.component';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -31,9 +31,9 @@ describe('SearchBarComponent', () => {
     spyOn(component.searchQuery, 'emit');
 
     const searchQuery = 'TEST QUERY';
-    const mockEvent = { target: { value: searchQuery } };
     component.isBusinessSearchType = true;
-    component.emitSearchQuery(mockEvent);
+    component.searchBarControl.setValue(searchQuery);
+    component.submitSearch();
 
     expect(component.searchQuery.emit).toHaveBeenCalledWith(jasmine.objectContaining({
       query: searchQuery,
@@ -45,9 +45,9 @@ describe('SearchBarComponent', () => {
     spyOn(component.searchQuery, 'emit');
 
     const searchQuery = 'TEST QUERY';
-    const mockEvent = { target: { value: searchQuery } };
     component.isBusinessSearchType = false;
-    component.emitSearchQuery(mockEvent);
+    component.searchBarControl.setValue(searchQuery);
+    component.submitSearch();
 
     expect(component.searchQuery.emit).toHaveBeenCalledWith(jasmine.objectContaining({
       query: searchQuery,

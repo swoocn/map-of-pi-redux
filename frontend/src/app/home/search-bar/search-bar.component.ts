@@ -53,13 +53,17 @@ export class SearchBarComponent implements OnInit {
 
   toggleSearchType(): void {
     this.isBusinessSearchType = !this.isBusinessSearchType;
+    // clear the search bar value when the search type is toggled
+    this.searchBarControl.setValue('');
   }
 
-  emitSearchQuery(event: any): void {
-    const query = event.target.value;
-    const searchType = this.isBusinessSearchType ? 'business' : 'product';
-    this.logger.info(`Search query emitted for ${searchType}: `, query);
-    this.searchQuery.emit({ query, searchType });
+  submitSearch(): void {
+    const query = this.searchBarControl.value;
+    if (query !== null) {
+      const searchType = this.isBusinessSearchType ? 'business' : 'product';
+      this.logger.info(`Search query emitted for ${searchType}: `, query);
+      this.searchQuery.emit({ query, searchType });
+    }
   }
 }
 
