@@ -7,11 +7,12 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { map, Observable, startWith } from 'rxjs';
-import { UiStateService } from '../../core/service/ui-state.service';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { map, Observable, startWith } from 'rxjs';
 import { NGXLogger } from 'ngx-logger';
 
+import { UiStateService } from '../../core/service/ui-state.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -37,7 +38,10 @@ export class SearchBarComponent implements OnInit {
   options: string[] = ['R', 'Re', 'Res', 'Rest', 'Resta', 'Restau', 'Restaur', 'Restaura', 'Restauran', 'Restaurant'];
   searchBarControl = new FormControl('');
 
-  @Output() searchQuery = new EventEmitter<string>();
+  isBusinessSearchType = true;
+
+  @Output() searchQuery = new EventEmitter<SearchQueryEvent>();
+  @Output() searchTypeToggled = new EventEmitter<boolean>();
 
   constructor(private readonly uiStateService: UiStateService, private logger: NGXLogger) {
     this.uiStateService.setShowBackButton(false);
@@ -50,16 +54,22 @@ export class SearchBarComponent implements OnInit {
     );
   }
 
+  resetMap(): void {
+    this.isBusinessSearchType = !this.isBusinessSearchType;
+    this.searchTypeToggled.emit();
+  }
+
   submitSearch(): void {
     const query = this.searchBarControl.value;
-    if (query != null) {
-      this.emitSearchQuery(query);
+    if (query !== null) {
+      const searchType = this.isBusinessSearchType ? 'business' : 'product';
+      this.logger.info(`Search query emitted for ${searchType}: `, query);
+      this.searchQuery.emit({ query, searchType });
     }
-  }  
-
-  emitSearchQuery(event: any): void {
-    const query = event.target.value;
-    this.logger.info('Search query emitted:', query);
-    this.searchQuery.emit(query);
   }
+}
+
+export interface SearchQueryEvent {
+  query: string;
+  searchType: string;
 }

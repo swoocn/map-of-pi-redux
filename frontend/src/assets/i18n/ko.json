@@ -4,7 +4,20 @@
   },
   "HOME": {
     "ADD_MY_BUSINESS": "내 비즈니스 추가",
-    "SEARCH_BAR_PLACEHOLDER": "비즈니스 검색..."
+    "SEARCH_BY_BUSINESS_PLACEHOLDER": "상점 검색..",
+    "SEARCH_BY_PRODUCT_PLACEHOLDER": "제품 검색..",
+    "SEARCH_RESULT_FOUND_MESSAGE": "검색 결과 {{numberOfShopsFound}}개의 상점을 찾았습니다. 모든 상점 마커를 보려면 확대하세요.",
+    "SEARCH_RESULT_NOT_FOUND_MESSAGE": "검색 결과 상점을 찾을 수 없습니다. 다른 기준으로 다시 시도하세요."
+  },
+  "MAP": {
+    "USER_LOCATION": "당신은 여기 있습니다",
+    "MOBILE_TRANSPORTATION_DISTANCE_MESSAGE": " 이목적지로 선택되었고 경로가 제공되었습니다. 이동 수단으로 이동하면 약 ",
+    "MOBILE_TRANSPORTATION_TIME_MESSAGE": "XX 시간 XX 분",
+    "MIDDLE_CLICKED_MESSAGE": "가운데 클릭",
+    "UNKNOWN_MARKER_CLICKED_MESSAGE": "알 수 없는 마커가 클릭되었습니다",
+    "BUTTONS": {
+      "CANCEL": "취소"
+    }
   },
   "FOOTER": {
     "PRIVACY_POLICY": "개인정보 처리방침",

@@ -1,12 +1,20 @@
 <div class="w-full min-w-40 fixed top-17 z-5 flex justify-center">
-  <div class="w-full max-w-lg pl-14 pr-4">
-    <form>
-      <mat-form-field class="w-full">
-        <mat-label>{{ 'HOME.SEARCH_BAR_PLACEHOLDER' | translate }}</mat-label>
-        <input type="text" matInput [formControl]="searchBarControl" (input)="emitSearchQuery($event)" />
+  <div class="w-full max-w-xl pl-14 pr-4 flex items-center">
+    <form class="w-full relative" (ngSubmit)="submitSearch()">
+      <mat-form-field class="w-full mb-0 flex-grow">
+        <mat-label>{{ (isBusinessSearchType ? 'HOME.SEARCH_BY_BUSINESS_PLACEHOLDER' : 'HOME.SEARCH_BY_PRODUCT_PLACEHOLDER') | translate}}</mat-label>
+        <input type="text" matInput [formControl]="searchBarControl" />
+        <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+          <input type="checkbox" id="toggle" class="toggle-checkbox" (change)="resetMap()">
+          <label for="toggle" class="toggle-label">
+            <mat-icon class="search-toggle-element business-icon">storefront</mat-icon>
+            <mat-icon class="search-toggle-element product-icon">inventory_2</mat-icon>
+          </label>
+          <button class="bg-gray-600 rounded h-10 w-10 flex items-center justify-center ml-5">
+            <mat-icon class="text-white text-2xl mb-1">search</mat-icon>
+          </button>
+        </div>
       </mat-form-field>
     </form>
   </div>
 </div>
-
-

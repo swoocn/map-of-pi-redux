@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, EventEmitter, Output, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,13 +14,14 @@ import { GeolocationService } from '../../core/service/geolocation.service';
 import { ShopService } from '../../core/service/shop.service';
 import { SnackService } from '../../core/service/snack.service';
 import { dummyCoordinates } from '../../core/model/business';
-import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { CustomMarkerOptions } from './marker-options.interface';
+
+export type SearchType = 'business' | 'product';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [SearchBarComponent, LeafletModule, RouterModule],
+  imports: [LeafletModule, RouterModule],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -43,11 +44,20 @@ export class MapComponent implements OnInit, OnDestroy {
   productsAvailable!: string;
   visitShop!: string;
   takeRoute!: string;
+  userLocation!: string;
+  mobileTransporationDistanceMessage!: string;
+  mobileTransportationTimeMessage!: string;
+  cancelButton!: string;
+  middleClickedMessage!: string;
+  unknownMarkerClickedMessage!: string;
 
   coordinates = dummyCoordinates;
-
+  
+  private userMarker: any;
   private langChangeSubscription: Subscription;
   private geolocationSubscription: Subscription;
+
+  @Output() filteredShopCountChange: EventEmitter<number> = new EventEmitter<number>();
 
   constructor(
     private readonly geolocationService: GeolocationService,
@@ -113,16 +123,37 @@ export class MapComponent implements OnInit, OnDestroy {
     this.track();
   }
 
+  resetAndShowAllShops(): void {
+    this.filteredShops = this.allShops;
+    this.removeAllMarkersFromMap();
+    this.addAllCoordinatesToMap();
+  }
+
   // Filter shops based on search query
-  filterShops(query: string): void {
-    this.logger.debug("Filtering shops..");
-    this.filteredShops = this.allShops.filter(shop =>
-      shop.name.toLowerCase().includes(query.toLowerCase())
-    );
-    // console.log("Filtered shops:", this.filteredShops);
+  filterShops(query: string, searchType: SearchType): void {
+    this.logger.debug(`Filtering shops based on searchType: ${searchType}..`);
+    // search by business
+    if (searchType === 'business') {
+      this.filteredShops = this.allShops.filter(shop =>
+        shop.name.toLowerCase().includes(query.toLowerCase())
+      );
+    // search by product
+    } else if (searchType === 'product') {
+      this.filteredShops = this.allShops.filter(shop =>
+        shop.products.some((product: { name: string; }) =>
+          product.name.toLowerCase().includes(query.toLowerCase()))
+      );
+    } else {
+      this.logger.error("Unexpected and invalid search type: ", searchType);
+      this.filteredShops = [];
+    }
+
+    this.logger.debug("Filtered shops:", this.filteredShops);
     // Update the map markers to reflect the filtered shops
     this.removeAllMarkersFromMap();
     this.addAllCoordinatesToMap(this.filteredShops);
+    // Emit the count of filtered shops
+    this.filteredShopCountChange.emit(this.filteredShops.length);
   }
 
   private updateTranslatedStrings(): void {
@@ -131,6 +162,12 @@ export class MapComponent implements OnInit, OnDestroy {
     this.productsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.PRODUCTS_AVAILABLE_MESSAGE');
     this.visitShop = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.VISIT_SHOP');
     this.takeRoute = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.TAKE_ROUTE');
+    this.userLocation = this.translateService.instant('MAP.USER_LOCATION');
+    this.mobileTransporationDistanceMessage = this.translateService.instant('MAP.MOBILE_TRANSPORTATION_DISTANCE_MESSAGE');
+    this.mobileTransportationTimeMessage = this.translateService.instant('MAP.MOBILE_TRANSPORTATION_TIME_MESSAGE');
+    this.cancelButton = this.translateService.instant('MAP.BUTTONS.CANCEL'); 
+    this.middleClickedMessage = this.translateService.instant('MAP.MIDDLE_CLICKED_MESSAGE');
+    this.unknownMarkerClickedMessage = this.translateService.instant('MAP.UNKNOWN_MARKER_CLICKED_MESSAGE');
   }
 
   async track() {
@@ -151,11 +188,11 @@ export class MapComponent implements OnInit, OnDestroy {
         zIndexOffset: -100
       };
 
-      const userMarker = marker([coord[0], coord[1]], userMarkerOptions)
-        .bindPopup(`<div class="">You're Here</div>`)
+      this.userMarker = marker([coord[0], coord[1]], userMarkerOptions)
+        .bindPopup(`<div class="">${this.userLocation}</div>`)
         .openPopup();
 
-      this.map.addLayer(userMarker);
+      this.map.addLayer(this.userMarker);
       this.map.flyTo([coord[0], coord[1]], 15);
     });
   }
@@ -205,13 +242,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
                     switch (customType) {
                       case 'user':
-                        this.snackService.showMessage(`You are located here`);
+                        this.snackService.showMessage(this.userLocation);
                         break;
                       case 'shop':
                         newMarker.bindPopup(`
                               <div class="p-4">
-                                  <div><span class="font-bold text-red-800">${shop.name}</span> has been selected as your destination and the route has been provided. It will take you approximately <span class="font-bold">XX hours and XX minutes</span> by mobile transportation.</div>
-                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">Cancel</button>
+                                  <div><span class="font-bold text-red-800">${shop.name}</span>${this.mobileTransporationDistanceMessage}<span class="font-bold">${this.mobileTransportationTimeMessage}</span>.</div>
+                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">${this.cancelButton}</button>
                               </div>
                           `);
 
@@ -229,10 +266,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
                         break;
                       case 'middle':
-                        this.snackService.showMessage('Middle clicked');
+                        this.snackService.showMessage(this.middleClickedMessage);
                         break;
                       default:
-                        this.snackService.showMessage('Unknown marker clicked');
+                        this.snackService.showMessage(this.unknownMarkerClickedMessage);
                     }
                   });
                 };
@@ -273,11 +310,15 @@ export class MapComponent implements OnInit, OnDestroy {
         this.map.removeLayer(layer);
       }
     });
+    // close and unbind user location popup for translation switch to register when it rebinds.
+    if (this.userMarker) {
+      this.userMarker.closePopup();
+      this.userMarker.unbindPopup();
+      this.track();
+    }
   }
 
   clicked(id: any): void {
-    // this.navigator.navigate(['manage-business', id]);
-    // this.navigator.navigate(['shop', 'order-menu']);
     this.navigator.navigate(['view-shop', id]);
   }
 

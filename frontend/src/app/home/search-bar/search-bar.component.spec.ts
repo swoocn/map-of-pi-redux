@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { NGXLogger } from 'ngx-logger';
-import { SearchBarComponent } from './search-bar.component';
+import { SearchBarComponent, SearchQueryEvent } from './search-bar.component';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -25,5 +25,33 @@ describe('SearchBarComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should emit searchQuery event for business search when business search type is toggled', () => {
+    spyOn(component.searchQuery, 'emit');
+
+    const searchQuery = 'TEST QUERY';
+    component.isBusinessSearchType = true;
+    component.searchBarControl.setValue(searchQuery);
+    component.submitSearch();
+
+    expect(component.searchQuery.emit).toHaveBeenCalledWith(jasmine.objectContaining({
+      query: searchQuery,
+      searchType: 'business'
+    }));
+  });
+
+  it('should emit searchQuery event for product search when product search type is toggled', () => {
+    spyOn(component.searchQuery, 'emit');
+
+    const searchQuery = 'TEST QUERY';
+    component.isBusinessSearchType = false;
+    component.searchBarControl.setValue(searchQuery);
+    component.submitSearch();
+
+    expect(component.searchQuery.emit).toHaveBeenCalledWith(jasmine.objectContaining({
+      query: searchQuery,
+      searchType: 'product'
+    }));
   });
 });

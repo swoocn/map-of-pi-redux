@@ -4,7 +4,20 @@
   },
   "HOME": {
     "ADD_MY_BUSINESS": "Agregar mi negocio",
-    "SEARCH_BAR_PLACEHOLDER": "Buscar negocio..."
+    "SEARCH_BY_BUSINESS_PLACEHOLDER": "Buscar negocios..",
+    "SEARCH_BY_PRODUCT_PLACEHOLDER": "Buscar productos..",
+    "SEARCH_RESULT_FOUND_MESSAGE": "Tu búsqueda encontró {{numberOfShopsFound}} tiendas. Por favor, haz zoom para ver todos los marcadores de tiendas.",
+    "SEARCH_RESULT_NOT_FOUND_MESSAGE": "Tu búsqueda no encontró ninguna tienda. Por favor, inténtalo de nuevo con diferentes criterios."
+  },
+  "MAP": {
+    "USER_LOCATION": "Estás aquí",
+    "MOBILE_TRANSPORTATION_DISTANCE_MESSAGE": " se ha seleccionado como tu destino y se ha proporcionado la ruta. El transporte móvil te llevará aproximadamente ",
+    "MOBILE_TRANSPORTATION_TIME_MESSAGE": "XX horas y XX minutos",
+    "MIDDLE_CLICKED_MESSAGE": "Clic medio",
+    "UNKNOWN_MARKER_CLICKED_MESSAGE": "Marcador desconocido clicado",
+    "BUTTONS": {
+      "CANCEL": "Cancelar"
+    }
   },
   "FOOTER": {
     "PRIVACY_POLICY": "Política de privacidad",
