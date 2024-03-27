@@ -16,6 +16,8 @@ import { SnackService } from '../../core/service/snack.service';
 import { dummyCoordinates } from '../../core/model/business';
 import { CustomMarkerOptions } from './marker-options.interface';
 
+export type SearchType = 'business' | 'product';
+
 @Component({
   selector: 'app-map',
   standalone: true,
@@ -128,7 +130,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // Filter shops based on search query
-  filterShops(query: string, searchType: string): void {
+  filterShops(query: string, searchType: SearchType): void {
     this.logger.debug(`Filtering shops based on searchType: ${searchType}..`);
     // search by business
     if (searchType === 'business') {
@@ -309,9 +311,11 @@ export class MapComponent implements OnInit, OnDestroy {
       }
     });
     // close and unbind user location popup for translation switch to register when it rebinds.
-    this.userMarker.closePopup();
-    this.userMarker.unbindPopup();
-    this.track();
+    if (this.userMarker) {
+      this.userMarker.closePopup();
+      this.userMarker.unbindPopup();
+      this.track();
+    }
   }
 
   clicked(id: any): void {

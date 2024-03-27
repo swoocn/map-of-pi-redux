@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { NGXLogger } from 'ngx-logger';
-import { MapComponent } from './map.component';
+import { MapComponent, SearchType } from './map.component';
 
 describe('MapComponent', () => {
   let component: MapComponent;
@@ -51,7 +51,7 @@ describe('MapComponent', () => {
   it('should handle invalid search types', () => {
     component.allShops = allShops;
 
-    component.filterShops('Shop 1', '');
+    component.filterShops('Shop 1', '' as SearchType);
     expect(component.filteredShops.length).toEqual(0);
   });
 });

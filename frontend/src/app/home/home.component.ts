@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy
 import { TranslateService } from '@ngx-translate/core';
 
 import { Subscription } from 'rxjs';
+import { NGXLogger } from 'ngx-logger';
 
 import { ActionRowComponent } from './action-row/action-row.component';
 import { SearchBarComponent, SearchQueryEvent } from './search-bar/search-bar.component';
@@ -23,7 +24,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   private mapSubscription!: Subscription;
 
-  constructor(private readonly snackService: SnackService, private translateService: TranslateService) {}
+  constructor(private readonly snackService: SnackService, private translateService: TranslateService, private logger: NGXLogger) {}
 
   ngAfterViewInit(): void {
     if (this.mapComponent) {
@@ -49,7 +50,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   passSearchQueryToMap(event: SearchQueryEvent): void {
-    this.mapComponent.filterShops(event.query, event.searchType);
+    if (event.searchType === 'business' || event.searchType === 'product') {
+      this.mapComponent.filterShops(event.query, event.searchType);
+    } else {
+      this.logger.error("Invalid searchType provided", event.searchType);
+    }
   }
 
   handleSearchTypeToggled(): void {
