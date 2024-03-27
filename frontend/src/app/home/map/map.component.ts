@@ -123,12 +123,6 @@ export class MapComponent implements OnInit, OnDestroy {
     this.track();
   }
 
-  resetAndShowAllShops(): void {
-    this.filteredShops = this.allShops;
-    this.removeAllMarkersFromMap();
-    this.addAllCoordinatesToMap();
-  }
-
   // Filter shops based on search query
   filterShops(query: string, searchType: SearchType): void {
     this.logger.debug(`Filtering shops based on searchType: ${searchType}..`);
@@ -304,7 +298,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // remove all map markers except for user position
-  private removeAllMarkersFromMap(): void {
+  removeAllMarkersFromMap(): void {
     this.map.eachLayer((layer) => {
       if (layer instanceof L.Marker && !(layer.options as CustomMarkerOptions)?.isCurrentUser) {
         this.map.removeLayer(layer);
