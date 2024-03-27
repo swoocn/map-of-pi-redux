@@ -58,6 +58,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   handleSearchTypeToggled(): void {
-    this.mapComponent.resetAndShowAllShops();
+    this.mapComponent.removeAllMarkersFromMap();
   }
 }
