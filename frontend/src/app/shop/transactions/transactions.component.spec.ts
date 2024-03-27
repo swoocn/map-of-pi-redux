@@ -1,18 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TransactionsComponent } from './transactions.component';
+import { NGXLogger } from 'ngx-logger';
 
 describe('TransactionsComponent', () => {
   let component: TransactionsComponent;
   let fixture: ComponentFixture<TransactionsComponent>;
+  let mockLogger: jasmine.SpyObj<NGXLogger>;
 
   beforeEach(async () => {
+    const loggerSpy = jasmine.createSpyObj('NGXLogger', ['debug', 'info', 'warn', 'error']);
+
     await TestBed.configureTestingModule({
-      imports: [TransactionsComponent, RouterTestingModule]
+      imports: [TransactionsComponent, RouterTestingModule],
+      providers: [{ provide: NGXLogger, useValue: loggerSpy }]
     }).compileComponents();
     
     fixture = TestBed.createComponent(TransactionsComponent);
     component = fixture.componentInstance;
+    mockLogger = TestBed.inject(NGXLogger) as jasmine.SpyObj<NGXLogger>;
     fixture.detectChanges();
   });
 

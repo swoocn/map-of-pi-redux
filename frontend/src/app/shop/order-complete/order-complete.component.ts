@@ -15,7 +15,6 @@ export class OrderCompleteComponent implements OnInit {
 
   fetchOrderCompletionDetails(): void {
     // Fetch details from the backend and update elements accordingly
-    console.log('Fetching order completion details...');
     // Replace with actual API call
   }
 

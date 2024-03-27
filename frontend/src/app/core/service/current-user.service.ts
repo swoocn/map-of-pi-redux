@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AxiosRequestConfig } from 'axios';
+import { NGXLogger } from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,7 @@ export class CurrentUserService {
   private tokenKey: string = 'currentUserAccessToken';
   private token: string | null = null;
 
-  constructor() {
+  constructor(private logger: NGXLogger) {
     this.token = localStorage.getItem(this.tokenKey);
     const storedUser = localStorage.getItem(this.currentUserKey);
     if (storedUser) {
@@ -26,7 +27,7 @@ export class CurrentUserService {
   setToken(token: string): void {
     this.token = token;
     localStorage.setItem(this.tokenKey, token);
-    console.log('Token from backend : ' + token);
+    this.logger.info('Token from backend: ' + token);
   }
 
   clearToken(): void {
@@ -42,7 +43,7 @@ export class CurrentUserService {
   setCurrentUser(user: any): void {
     this.currentUser = user;
     localStorage.setItem(this.currentUserKey, JSON.stringify(user)); // Store user data in localStorage
-    console.log('From current user : ', this.currentUser);
+    this.logger.info('From current user: ', this.currentUser);
   }
 
   getConfig(): AxiosRequestConfig {
@@ -52,7 +53,6 @@ export class CurrentUserService {
         Authorization: `Bearer ${this.token}`,
       };
     }
-
     return config;
   }
 }

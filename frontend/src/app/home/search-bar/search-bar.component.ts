@@ -2,14 +2,17 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { map, Observable, startWith } from 'rxjs';
-import { UiStateService } from '../../core/service/ui-state.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
 import { MatButton, MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { map, Observable, startWith } from 'rxjs';
+import { NGXLogger } from 'ngx-logger';
+
+import { UiStateService } from '../../core/service/ui-state.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -35,9 +38,12 @@ export class SearchBarComponent implements OnInit {
   options: string[] = ['R', 'Re', 'Res', 'Rest', 'Resta', 'Restau', 'Restaur', 'Restaura', 'Restauran', 'Restaurant'];
   searchBarControl = new FormControl('');
 
-  @Output() searchQuery = new EventEmitter<string>();
+  isBusinessSearchType = true;
 
-  constructor(private readonly uiStateService: UiStateService) {
+  @Output() searchQuery = new EventEmitter<SearchQueryEvent>();
+  @Output() searchTypeToggled = new EventEmitter<boolean>();
+
+  constructor(private readonly uiStateService: UiStateService, private logger: NGXLogger) {
     this.uiStateService.setShowBackButton(false);
   }
 
@@ -48,16 +54,22 @@ export class SearchBarComponent implements OnInit {
     );
   }
 
+  resetMap(): void {
+    this.isBusinessSearchType = !this.isBusinessSearchType;
+    this.searchTypeToggled.emit();
+  }
+
   submitSearch(): void {
     const query = this.searchBarControl.value;
-    if (query != null) {
-      this.emitSearchQuery(query);
+    if (query !== null) {
+      const searchType = this.isBusinessSearchType ? 'business' : 'product';
+      this.logger.info(`Search query emitted for ${searchType}: `, query);
+      this.searchQuery.emit({ query, searchType });
     }
-  }  
-
-  emitSearchQuery(event: any): void {
-    const query = event.target.value;
-    console.log('Search query:', query);
-    this.searchQuery.emit(query);
   }
+}
+
+export interface SearchQueryEvent {
+  query: string;
+  searchType: string;
 }

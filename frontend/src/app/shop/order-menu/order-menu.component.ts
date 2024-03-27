@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 import { ShopService } from '../../core/service/shop.service';
 import { CurrentUserService } from '../../core/service/current-user.service';
 import { PaymentsService } from '../../core/service/payments.service';
@@ -10,7 +12,7 @@ import { PaymentsService } from '../../core/service/payments.service';
 @Component({
   selector: 'app-order-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
+  imports: [CommonModule, FormsModule, MatIconModule, RouterModule, TranslateModule],
   templateUrl: './order-menu.component.html',
   styleUrl: './order-menu.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,63 +25,32 @@ export class OrderMenuComponent implements OnInit {
   isShop: boolean = true;
 
   cartItemCount: number = 0;
-  businessName: string = 'Business Name';
-  businessType: string = 'Coffee Shop';
-  businessAddress: string = '123 Main Street, Anytown, AN 12345, Country';
-  stampsButtonText: string = '4 Stamps';
+  businessType: string = 'General';
+  stampsButtonText: string = 'XX Stamps';
   highlightText: string = 'You can order online and pay in person';
 
   constructor(
     private shopServices: ShopService,
     private currentUserService: CurrentUserService,
     private paymentService: PaymentsService,
-  ) {
-    this.shopId = this.params.snapshot.params['id'];
-    // this.shopServices.getShop(this.shopId).then((response) => {
-    //   this.shop = response.data;
-    // });
+    private logger: NGXLogger) {
+      this.shopId = this.params.snapshot.params['id'];
   }
 
-  businessImages: any[] = [
-    {
-      url: '../../../assets/images/shopping/mock/coffee-shop-image.jpg',
-      alt: 'Interior of coffee shop with a barista at work',
-    },
-    {
-      url: '../../../assets/images/shopping/mock/coffee-shop-image_2.jpg',
-      alt: 'Close-up of a coffee cup on a table',
-    },
-    {
-      url: '../../../assets/images/shopping/mock/coffee-shop-image_3.jpg',
-      alt: 'External view of coffee shop',
-    },
-    {
-      url: '../../../assets/images/shopping/mock/coffee-1.jpg',
-      alt: 'Close-up of a coffee cup on a table',
-    },
-  ];
+  ngOnInit(): void {
+    this.logger.info('Fetching shop data: ', this.shop);
 
-  products: any[] = [
-    // Placeholder product data
-    {
-      id: 'coffee1',
-      name: 'Coffee 1',
-      amount: 'XX',
-      imageUrl: '../../../assets/images/shopping/mock/coffee-1.jpg',
-      imageAlt: 'Image of a cappuccino',
-      description: 'Description Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora eius harum quisquam?.',
-      quantity: 1,
-    },
-    {
-      id: 'coffee2',
-      name: 'Coffee 2',
-      amount: 'XX',
-      imageUrl: '../../../assets/images/shopping/mock/coffee-2.webp',
-      imageAlt: 'Image of a cappuccino',
-      description: 'Description Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laborum exercitationem beatae dignissimos!',
-      quantity: 1,
-    },
-  ];
+    this.shopServices.getShop(this.shopId)
+      .then((response) => {
+        this.isShop = true;
+        this.shop = response.data;
+        this.currentUser = this.currentUserService.getCurrentUser();
+        this.logger.info('Here is the real shop and associated products: ', this.shop.products);
+      })
+      .catch((err) => {
+        this.logger.error('Error while setting up shop : ', err);
+      });
+  }
 
   decreaseQuantity(product: any): void {
     // Handle decreasing quantity for a product
@@ -124,36 +95,13 @@ export class OrderMenuComponent implements OnInit {
   switchToProductsMenu() {}
 
   consoleShop(): void {
-    console.log('Here is the shop', this.shop);
-  }
-
-  ngOnInit(): void {
-    this.products.forEach((product) => {
-      product.showAddButton = true;
-      product.showDeleteButton = false;
-    });
-
-    console.log('Here is the shop', this.shop);
-
-    this.shopServices
-      .getShop(this.shopId)
-      .then((response) => {
-        this.isShop = true;
-        this.shop = response.data;
-        this.currentUser = this.currentUserService.getCurrentUser();
-        console.log('Here is the real shop and associated products: ', this.shop.products);
-      })
-      .catch((err) => {
-        console.log('Error while setting up shop : ', err);
-      });
+    this.logger.info('Here is the shop', this.shop);
   }
 
   orderProduct(amount: number) {
     this.paymentService.orderProductFromShop('test', amount, {
       productId: 'test',
     });
-
-    // emo: string, amount: number, paymentMetadata: any
   }
 
   getStars(rating: number): { fill: boolean }[] {

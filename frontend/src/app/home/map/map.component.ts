@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { Map, marker, Layer } from 'leaflet';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, EventEmitter, Output, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TranslateService } from '@ngx-translate/core';
+
 import axios from 'axios';
+import { Subscription } from 'rxjs';
+import { NGXLogger } from 'ngx-logger';
+import { Map, marker, Layer } from 'leaflet';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
 
@@ -11,19 +14,19 @@ import { GeolocationService } from '../../core/service/geolocation.service';
 import { ShopService } from '../../core/service/shop.service';
 import { SnackService } from '../../core/service/snack.service';
 import { dummyCoordinates } from '../../core/model/business';
-import { SearchBarComponent } from '../search-bar/search-bar.component';
-
 import { CustomMarkerOptions } from './marker-options.interface';
+
+export type SearchType = 'business' | 'product';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [SearchBarComponent, LeafletModule, RouterModule],
+  imports: [LeafletModule, RouterModule],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   layer?: Layer;
   map!: Map;
   options;
@@ -38,31 +41,41 @@ export class MapComponent implements OnInit {
   // Translation strings
   distanceMessage!: string;
   onlinePiOrdersAllowedMessage!: string;
-  menuItemsAvailable!: string;
+  productsAvailable!: string;
   visitShop!: string;
   takeRoute!: string;
+  userLocation!: string;
+  mobileTransporationDistanceMessage!: string;
+  mobileTransportationTimeMessage!: string;
+  cancelButton!: string;
+  middleClickedMessage!: string;
+  unknownMarkerClickedMessage!: string;
 
   coordinates = dummyCoordinates;
+  
+  private userMarker: any;
+  private langChangeSubscription: Subscription;
+  private geolocationSubscription: Subscription;
+
+  @Output() filteredShopCountChange: EventEmitter<number> = new EventEmitter<number>();
 
   constructor(
     private readonly geolocationService: GeolocationService,
     private readonly snackService: SnackService,
     private shopService: ShopService,
     private translateService: TranslateService,
-  ) {
+    private logger: NGXLogger) {
+      
     this.options = this.geolocationService.getMapOptions();
-    this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
+    this.geolocationSubscription = this.geolocationService.geolocationTriggerEvent$.subscribe(() => {
       this.locateMe();
     });
 
     this.userPositions = this.shopService.getUserPosition();
 
-    this.translateService.onLangChange.subscribe(() => {
-      // console.log('Language changed. Updating translated strings...');
+    this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => {
       this.removeAllMarkersFromMap();
-      // Update translated strings here
       this.updateTranslatedStrings();
-      // console.log('Translated strings updated:', this.distanceMessage, this.onlinePiOrdersAllowedMessage, this.menuItemsAvailable, this.visitShop, this.takeRoute);
       this.addAllCoordinatesToMap();
     });
   }
@@ -71,7 +84,7 @@ export class MapComponent implements OnInit {
     try {
       const response = await axios.get('https://api-mapofpi.vercel.app/shops');
 
-      // console.log('From Map of Pi : ', response.data?.data);
+      this.logger.debug('From Map of Pi: ', response.data?.data);
 
       const shops: any[] = response.data?.data;
 
@@ -82,14 +95,22 @@ export class MapComponent implements OnInit {
       this.updateTranslatedStrings();
       this.addAllCoordinatesToMap();
 
-      // console.log(
-      //   'All shops after fetching them from DB ',
-      //   this.allShops.map((shop) => shop.coordinates),
-      // );
+      this.logger.debug('All shops after fetching them from DB ', this.allShops.map((shop) => shop.coordinates));
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
     this.track();
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from langChangeSubscription to prevent potential memory leaks
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+    // Unsubscribe from geolocationTriggerEvent$ to prevent potential memory leaks
+    if (this.geolocationSubscription) {
+      this.geolocationSubscription.unsubscribe();
+    }
   }
 
   onMapReady(map: Map): void {
@@ -102,34 +123,61 @@ export class MapComponent implements OnInit {
     this.track();
   }
 
+  resetAndShowAllShops(): void {
+    this.filteredShops = this.allShops;
+    this.removeAllMarkersFromMap();
+    this.addAllCoordinatesToMap();
+  }
+
   // Filter shops based on search query
-  filterShops(query: string): void {
-    console.log("filterShops called");
-    this.filteredShops = this.allShops.filter(shop =>
-      shop.name.toLowerCase().includes(query.toLowerCase())
-    );
-    // console.log("Filtered shops:", this.filteredShops);
+  filterShops(query: string, searchType: SearchType): void {
+    this.logger.debug(`Filtering shops based on searchType: ${searchType}..`);
+    // search by business
+    if (searchType === 'business') {
+      this.filteredShops = this.allShops.filter(shop =>
+        shop.name.toLowerCase().includes(query.toLowerCase())
+      );
+    // search by product
+    } else if (searchType === 'product') {
+      this.filteredShops = this.allShops.filter(shop =>
+        shop.products.some((product: { name: string; }) =>
+          product.name.toLowerCase().includes(query.toLowerCase()))
+      );
+    } else {
+      this.logger.error("Unexpected and invalid search type: ", searchType);
+      this.filteredShops = [];
+    }
+
+    this.logger.debug("Filtered shops:", this.filteredShops);
     // Update the map markers to reflect the filtered shops
     this.removeAllMarkersFromMap();
     this.addAllCoordinatesToMap(this.filteredShops);
+    // Emit the count of filtered shops
+    this.filteredShopCountChange.emit(this.filteredShops.length);
   }
 
   private updateTranslatedStrings(): void {
     this.distanceMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.DISTANCE_MESSAGE');
     this.onlinePiOrdersAllowedMessage = this.translateService.instant('BUSINESS_MARKER_DIALOG.ONLINE_PI_ORDERS_ALLOWED_MESSAGE');
-    this.menuItemsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.MENU_ITEMS_AVAILABLE_MESSAGE');
+    this.productsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.PRODUCTS_AVAILABLE_MESSAGE');
     this.visitShop = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.VISIT_SHOP');
     this.takeRoute = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.TAKE_ROUTE');
+    this.userLocation = this.translateService.instant('MAP.USER_LOCATION');
+    this.mobileTransporationDistanceMessage = this.translateService.instant('MAP.MOBILE_TRANSPORTATION_DISTANCE_MESSAGE');
+    this.mobileTransportationTimeMessage = this.translateService.instant('MAP.MOBILE_TRANSPORTATION_TIME_MESSAGE');
+    this.cancelButton = this.translateService.instant('MAP.BUTTONS.CANCEL'); 
+    this.middleClickedMessage = this.translateService.instant('MAP.MIDDLE_CLICKED_MESSAGE');
+    this.unknownMarkerClickedMessage = this.translateService.instant('MAP.UNKNOWN_MARKER_CLICKED_MESSAGE');
   }
 
   async track() {
-    console.log('Coordinates from shop in track: ', this.shopService.getUserPosition());
+    this.logger.debug('Coordinates from shop in track: ', this.shopService.getUserPosition());
 
     const location = await axios.get('https://ipapi.co/json/');
 
     const { data } = location;
 
-    // console.log('User data: ', data);
+    this.logger.debug('User data: ', data);
 
     const coordinates = [[data.latitude, data.longitude]];
 
@@ -140,11 +188,11 @@ export class MapComponent implements OnInit {
         zIndexOffset: -100
       };
 
-      const userMarker = marker([coord[0], coord[1]], userMarkerOptions)
-        .bindPopup(`<div class="">You're Here</div>`)
+      this.userMarker = marker([coord[0], coord[1]], userMarkerOptions)
+        .bindPopup(`<div class="">${this.userLocation}</div>`)
         .openPopup();
 
-      this.map.addLayer(userMarker);
+      this.map.addLayer(this.userMarker);
       this.map.flyTo([coord[0], coord[1]], 15);
     });
   }
@@ -194,14 +242,13 @@ export class MapComponent implements OnInit {
 
                     switch (customType) {
                       case 'user':
-                        this.snackService.showMessage(`Dear Soleil00 You"re located here`);
+                        this.snackService.showMessage(this.userLocation);
                         break;
                       case 'shop':
                         newMarker.bindPopup(`
                               <div class="p-4">
-                                  <div class="text-lg font-bold mb-2">${shop.name}</div>
-                                  <div>${shop.name} is located here and you are about to take routes towards it. It will approximately take you 23 min by car.</div>
-                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md">Cancel</button>
+                                  <div><span class="font-bold text-red-800">${shop.name}</span>${this.mobileTransporationDistanceMessage}<span class="font-bold">${this.mobileTransportationTimeMessage}</span>.</div>
+                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">${this.cancelButton}</button>
                               </div>
                           `);
 
@@ -213,17 +260,16 @@ export class MapComponent implements OnInit {
                               // routeControl.removeFrom(this.map);
                               this.map.removeControl(routeControl);
                               newMarker.removeFrom(this.map);
-                              console.log('Button clicked');
                             });
                           }
                         });
 
                         break;
                       case 'middle':
-                        this.snackService.showMessage('Middle clicked');
+                        this.snackService.showMessage(this.middleClickedMessage);
                         break;
                       default:
-                        this.snackService.showMessage('Unknown marker clicked');
+                        this.snackService.showMessage(this.unknownMarkerClickedMessage);
                     }
                   });
                 };
@@ -241,8 +287,8 @@ export class MapComponent implements OnInit {
                   },
                 });
 
-                console.log('from routing : ', { ...routeControl });
-                console.log('type of routes : ', typeof routeControl);
+                this.logger.debug('From routing : ', { ...routeControl });
+                this.logger.debug('Type of routes : ', typeof routeControl);
                 routeControl.addTo(this.map);
               });
             });
@@ -252,7 +298,7 @@ export class MapComponent implements OnInit {
             }
           });
       } else {
-          //console.error(`Incomplete coordinates for shop ${shop.name}`);
+          this.logger.error(`Incomplete coordinates for shop ${shop.name}`);
       }
     });
   }
@@ -264,11 +310,15 @@ export class MapComponent implements OnInit {
         this.map.removeLayer(layer);
       }
     });
+    // close and unbind user location popup for translation switch to register when it rebinds.
+    if (this.userMarker) {
+      this.userMarker.closePopup();
+      this.userMarker.unbindPopup();
+      this.track();
+    }
   }
 
   clicked(id: any): void {
-    // this.navigator.navigate(['manage-business', id]);
-    // this.navigator.navigate(['shop', 'order-menu']);
     this.navigator.navigate(['view-shop', id]);
   }
 
@@ -287,7 +337,7 @@ export class MapComponent implements OnInit {
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
               <div class="ml-1">
-                <code class="text-sm font-bold text-gray-900">23 km</code> ${this.distanceMessage}
+                <code class="text-sm font-bold text-gray-900">XXX km</code> ${this.distanceMessage}
               </div>
             </div>
             <div class="flex items-center">
@@ -304,7 +354,7 @@ export class MapComponent implements OnInit {
                 <circle cx="12" cy="12" r="11" />
                 <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
               </svg>
-              <div class="ml-1"><code class="text-sm font-bold text-gray-900">15</code> ${this.menuItemsAvailable}</div>
+              <div class="ml-1"><code class="text-sm font-bold text-gray-900">${shop.products.length}</code> ${this.productsAvailable}</div>
             </div>
           </div>
         

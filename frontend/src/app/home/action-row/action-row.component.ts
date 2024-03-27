@@ -1,12 +1,13 @@
 import { Component, OnInit, Signal } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { GeolocationService } from '../../core/service/geolocation.service';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
+import { NGXLogger } from 'ngx-logger';
 import { CurrentUserService } from '../../core/service/current-user.service';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { GeolocationService } from '../../core/service/geolocation.service';
 import { SocialComponent } from '../../dialogs/social/social.component';
 
 @Component({
@@ -25,9 +26,9 @@ export class ActionRowComponent implements OnInit {
     private readonly router: Router,
     private currentUserService: CurrentUserService,
     public dialog: MatDialog,
-  ) {
-    this.geoLoading = this.geolocationService.geoLoading;
-    this.currentUser = this.currentUserService.getCurrentUser();
+    private logger: NGXLogger) {
+      this.geoLoading = this.geolocationService.geoLoading;
+      this.currentUser = this.currentUserService.getCurrentUser();
   }
 
   locateMe(): void {
@@ -36,7 +37,7 @@ export class ActionRowComponent implements OnInit {
 
   navigateToBusiness(): void {
     this.router.navigate(['/business']);
-    // console.log('from map user shops', this.currentUser.shops);
+    this.logger.debug('From map user shops', this.currentUser.shops);
   }
 
   openDialog() {
@@ -49,7 +50,7 @@ export class ActionRowComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       // console.log('The dialog was closed : ' + result);
       if (result === 'true') {
-        console.log('User refused');
+        this.logger.info('User refused');
       } else if (result === 'false') {
         localStorage.setItem('joined', 'true');
       }
@@ -72,7 +73,7 @@ export class ActionRowComponent implements OnInit {
           });
         }, 6000);
       } else {
-        console.log('Failed to retrieve user');
+        this.logger.error('Failed to retrieve user');
       }
     }
   }

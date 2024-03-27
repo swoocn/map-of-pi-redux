@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
+import { NGXLogger } from 'ngx-logger';
 import { ShopService } from '../../core/service/shop.service';
 import { CurrentUserService } from '../../core/service/current-user.service';
 import { PaymentsService } from '../../core/service/payments.service';
@@ -21,6 +22,7 @@ export class ManageBusinessComponent implements OnInit {
     private shopServices: ShopService,
     private currentUserService: CurrentUserService,
     private paymentService: PaymentsService,
+    private logger: NGXLogger
   ) {
     this.shopId = this.params.snapshot.params['id'];
     // this.currentuser = this.currentUserService.getCurrentUser();
@@ -42,13 +44,13 @@ export class ManageBusinessComponent implements OnInit {
     this.shopServices
       .getShop(this.shopId)
       .then((response) => {
-        // console.log('from response in manage busines : ', response);
+        this.logger.info('From response in manage busines: ', response);
         this.shop = response.data;
         this.currentuser = this.currentUserService.getCurrentUser();
-        console.log(' here is the real shop : ', this.shop);
+        this.logger.info('Here is the real shop: ', this.shop);
       })
       .catch((err) => {
-        console.log(' error while setting shop : ', err);
+        this.logger.error('Error while setting shop: ', err);
       });
   }
 }
