@@ -42,9 +42,16 @@ export class MapComponent implements OnInit, OnDestroy {
   productsAvailable!: string;
   visitShop!: string;
   takeRoute!: string;
+  userLocation!: string;
+  mobileTransporationDistanceMessage!: string;
+  mobileTransportationTimeMessage!: string;
+  cancelButton!: string;
+  middleClickedMessage!: string;
+  unknownMarkerClickedMessage!: string;
 
   coordinates = dummyCoordinates;
   
+  private userMarker: any;
   private langChangeSubscription: Subscription;
   private geolocationSubscription: Subscription;
 
@@ -153,6 +160,12 @@ export class MapComponent implements OnInit, OnDestroy {
     this.productsAvailable = this.translateService.instant('BUSINESS_MARKER_DIALOG.PRODUCTS_AVAILABLE_MESSAGE');
     this.visitShop = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.VISIT_SHOP');
     this.takeRoute = this.translateService.instant('BUSINESS_MARKER_DIALOG.BUTTONS.TAKE_ROUTE');
+    this.userLocation = this.translateService.instant('MAP.USER_LOCATION');
+    this.mobileTransporationDistanceMessage = this.translateService.instant('MAP.MOBILE_TRANSPORTATION_DISTANCE_MESSAGE');
+    this.mobileTransportationTimeMessage = this.translateService.instant('MAP.MOBILE_TRANSPORTATION_TIME_MESSAGE');
+    this.cancelButton = this.translateService.instant('MAP.BUTTONS.CANCEL'); 
+    this.middleClickedMessage = this.translateService.instant('MAP.MIDDLE_CLICKED_MESSAGE');
+    this.unknownMarkerClickedMessage = this.translateService.instant('MAP.UNKNOWN_MARKER_CLICKED_MESSAGE');
   }
 
   async track() {
@@ -173,11 +186,11 @@ export class MapComponent implements OnInit, OnDestroy {
         zIndexOffset: -100
       };
 
-      const userMarker = marker([coord[0], coord[1]], userMarkerOptions)
-        .bindPopup(`<div class="">You're Here</div>`)
+      this.userMarker = marker([coord[0], coord[1]], userMarkerOptions)
+        .bindPopup(`<div class="">${this.userLocation}</div>`)
         .openPopup();
 
-      this.map.addLayer(userMarker);
+      this.map.addLayer(this.userMarker);
       this.map.flyTo([coord[0], coord[1]], 15);
     });
   }
@@ -227,13 +240,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
                     switch (customType) {
                       case 'user':
-                        this.snackService.showMessage(`You are located here`);
+                        this.snackService.showMessage(this.userLocation);
                         break;
                       case 'shop':
                         newMarker.bindPopup(`
                               <div class="p-4">
-                                  <div><span class="font-bold text-red-800">${shop.name}</span> has been selected as your destination and the route has been provided. It will take you approximately <span class="font-bold">XX hours and XX minutes</span> by mobile transportation.</div>
-                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">Cancel</button>
+                                  <div><span class="font-bold text-red-800">${shop.name}</span>${this.mobileTransporationDistanceMessage}<span class="font-bold">${this.mobileTransportationTimeMessage}</span>.</div>
+                                  <button id="cancelBtn" class="mt-4 px-4 py-2 bg-orange-800 text-white rounded-md">${this.cancelButton}</button>
                               </div>
                           `);
 
@@ -251,10 +264,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
                         break;
                       case 'middle':
-                        this.snackService.showMessage('Middle clicked');
+                        this.snackService.showMessage(this.middleClickedMessage);
                         break;
                       default:
-                        this.snackService.showMessage('Unknown marker clicked');
+                        this.snackService.showMessage(this.unknownMarkerClickedMessage);
                     }
                   });
                 };
@@ -295,6 +308,10 @@ export class MapComponent implements OnInit, OnDestroy {
         this.map.removeLayer(layer);
       }
     });
+    // close and unbind user location popup for translation switch to register when it rebinds.
+    this.userMarker.closePopup();
+    this.userMarker.unbindPopup();
+    this.track();
   }
 
   clicked(id: any): void {

@@ -5,7 +5,19 @@
   "HOME": {
     "ADD_MY_BUSINESS": "Add my business",
     "SEARCH_BY_BUSINESS_PLACEHOLDER": "Search Businesses..",
-    "SEARCH_BY_PRODUCT_PLACEHOLDER": "Search Products.."
+    "SEARCH_BY_PRODUCT_PLACEHOLDER": "Search Products..",
+    "SEARCH_RESULT_FOUND_MESSAGE": "Your search found {{numberOfShopsFound}} shops. Please zoom out to view all shop markers.",
+    "SEARCH_RESULT_NOT_FOUND_MESSAGE": "Your search did not find any shops. Please try again with different criteria."
+  },
+  "MAP": {
+    "USER_LOCATION": "You're Here",
+    "MOBILE_TRANSPORTATION_DISTANCE_MESSAGE": " has been selected as your destination and the route has been provided. Mobile transportation will take you approximately ",
+    "MOBILE_TRANSPORTATION_TIME_MESSAGE": "XX hours and XX minutes",
+    "MIDDLE_CLICKED_MESSAGE": "Middle clicked",
+    "UNKNOWN_MARKER_CLICKED_MESSAGE": "Unknown marker clicked",
+    "BUTTONS": {
+      "CANCEL": "Cancel"
+    }
   },
   "FOOTER": {
     "PRIVACY_POLICY": "Privacy Policy",

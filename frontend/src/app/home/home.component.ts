@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { Subscription } from 'rxjs';
 
@@ -22,7 +23,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   private mapSubscription!: Subscription;
 
-  constructor(private readonly snackService: SnackService) {}
+  constructor(private readonly snackService: SnackService, private translateService: TranslateService) {}
 
   ngAfterViewInit(): void {
     if (this.mapComponent) {
@@ -39,8 +40,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   private displaySearchResultMessage(numberOfShopsFound: number): void {
-    // Display a message with the count of discovered shops
-    this.snackService.showMessage(`Your search resulted in ${numberOfShopsFound} shops found. Please zoom out to see the shop markers.`);
+    // Display a message based on the count of discovered shops
+    if (numberOfShopsFound > 0) {
+      this.snackService.showMessage(this.translateService.instant('HOME.SEARCH_RESULT_FOUND_MESSAGE', {numberOfShopsFound}));
+    } else {
+      this.snackService.showMessage(this.translateService.instant('HOME.SEARCH_RESULT_NOT_FOUND_MESSAGE'));
+    }
   }
 
   passSearchQueryToMap(event: SearchQueryEvent): void {
