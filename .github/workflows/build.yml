@@ -1,4 +1,4 @@
-name: Map of Pi CI/CD
+name: Map of Pi CI/CD [Build]
 
 # Controls when the workflow will execute
 on:
@@ -24,9 +24,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18.x
 
         # Frontend CI/CD Process
       - name: Install Dependencies for Frontend
