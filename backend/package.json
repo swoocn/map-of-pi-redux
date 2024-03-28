@@ -7,7 +7,9 @@
     "start": "nodemon server.js",
     "build": "npm install",
     "lint": "eslint .",
-    "test": "jest ./test"
+    "test": "jest ./test",
+    "version": "changeset version",
+    "release": "changeset publish"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +27,8 @@
     "winston": "^3.12.0"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.1",
     "eslint": "^8.57.0",
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-node": "^11.1.0",

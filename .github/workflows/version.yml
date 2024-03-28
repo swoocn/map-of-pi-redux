@@ -1,0 +1,45 @@
+name: Map of Pi CI/CD [Version]
+
+# Controls when the workflow will execute
+on:
+  # Triggers the workflow on push events for the "main" branch
+  push:
+    branches: 
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    timeout-minutes: 10 
+
+    runs-on: ubuntu-latest
+    # The sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: install dependencies
+        run: npm ci
+      
+      - name: Create release pull request or publish to npm
+        uses: changesets/action@v1
+        with:
+          publish: npm run release
+          version: npm run version
+          commit: "chore: new release"
+          title: "chore: new release candidate"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
